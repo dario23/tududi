@@ -2238,7 +2238,8 @@
       "inApp": "In-App",
       "email": "E-Mail",
       "push": "Push",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "ntfy": "ntfy"
     },
     "types": {
       "dueTasks": "Fällige Aufgaben",
@@ -2272,7 +2273,23 @@
     },
     "info": {
       "title": "Hinweis:",
-      "message": "E-Mail- und Push-Benachrichtigungen kommen bald. In-App- und Telegram-Benachrichtigungen sind derzeit verfügbar."
+      "message": "E-Mail-Benachrichtigungen kommen bald. In-App-, Push-, Telegram- und ntfy-Benachrichtigungen sind verfügbar."
+    },
+    "ntfy": {
+      "title": "ntfy",
+      "prompt": "Benachrichtigungen an ein Topic auf ntfy.sh oder deinem eigenen ntfy-Server senden und in der ntfy-App auf dem Handy empfangen.",
+      "configured": "Benachrichtigungen gehen an dieses ntfy-Topic. Welche, wählst du unten in der Spalte ntfy.",
+      "topicUrl": "Topic-Adresse",
+      "token": "Zugriffstoken (optional)",
+      "tokenSaved": "Gespeichert. Gib ein neues ein, um es zu ersetzen.",
+      "hint": "Wer einen Topic-Namen auf ntfy.sh kennt, kann mitlesen. Wähle also einen schwer zu erratenden Namen oder ein geschütztes Topic mit Zugriffstoken.",
+      "save": "Speichern",
+      "saved": "Gespeichert.",
+      "removeToken": "Token entfernen",
+      "tokenRemoved": "Zugriffstoken entfernt.",
+      "remove": "Ausschalten",
+      "removed": "ntfy ist ausgeschaltet.",
+      "failed": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
     }
   },
   "projectStatus": {
@@ -2536,7 +2553,8 @@
       "backups_import": "den Backup-Import",
       "attachments": "Anhänge",
       "public_notes": "öffentliche Notizen",
-      "members": "das Hinzufügen von Mitgliedern"
+      "members": "das Hinzufügen von Mitgliedern",
+      "ntfy": "ntfy-Benachrichtigungen"
     },
     "seatCovered": "Dein Platz wird von {{name}} bezahlt.",
     "workspaceOwner": "der Inhaberin oder dem Inhaber des Arbeitsbereichs",

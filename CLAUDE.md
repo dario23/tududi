@@ -331,6 +331,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Scopes Today, Upcoming, Tasks, Projects, Notes and live search; capture defaults to the Focus project and tags
     - `area_uid`, `project_uid` and `tags` query params resolved by `backend/services/scopeService.js`; the API, MCP and Telegram stay unscoped
 
+35. **[ntfy Notifications](docs/26-ntfy.md)**
+    - Notifications to an ntfy.sh or self-hosted ntfy topic, per type in the ntfy column
+    - Topic address and encrypted access token on the user, `GET/PUT/DELETE /api/ntfy`
+    - SSRF guard and `NTFY_ALLOW_PRIVATE_HOSTS` for a server on the LAN
+
 ---
 
 ## Project Overview

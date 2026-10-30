@@ -182,7 +182,7 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 20. **Notification preferences:**
     - Configure per notification type (due tasks, overdue tasks, due projects, etc.)
-    - Configure per channel (in-app, email, push, Telegram)
+    - Configure per channel (in-app, email, push, Telegram, ntfy)
     - Stored as JSON with defaults for new users
 
 21. **UI settings:**

@@ -121,6 +121,26 @@ class NotificationsService {
             return { channel, delivered: true };
         }
 
+        if (channel === 'ntfy') {
+            const ntfyService = require('../ntfy/service');
+            let sent;
+            try {
+                sent = await ntfyService.sendToUser(userId, {
+                    title: 'Test notification',
+                    message: 'ntfy notifications are working.',
+                });
+            } catch (error) {
+                if (error instanceof ntfyService.NtfyError) {
+                    throw new ValidationError(error.message);
+                }
+                throw error;
+            }
+            if (!sent) {
+                throw new ValidationError('Set up an ntfy topic first.');
+            }
+            return { channel, delivered: true };
+        }
+
         if (channel === 'email') {
             throw new ValidationError(
                 'Email notifications are not available yet'

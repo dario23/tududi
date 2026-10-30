@@ -10,9 +10,10 @@ import {
     FireIcon,
     ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
-import type { NotificationPreferences } from '../types';
+import type { NotificationChannels, NotificationPreferences } from '../types';
 import { getCsrfToken } from '../../../utils/csrfService';
 import PushDeviceCard from './PushDeviceCard';
+import NtfyCard from './NtfyCard';
 import { PushState, countPushDevices } from '../../../utils/pushService';
 
 interface NotificationsTabProps {
@@ -22,44 +23,75 @@ interface NotificationsTabProps {
 }
 
 const DEFAULT_PREFERENCES: NotificationPreferences = {
-    dueTasks: { inApp: true, email: false, push: false, telegram: false },
-    overdueTasks: { inApp: true, email: false, push: false, telegram: false },
-    dueProjects: { inApp: true, email: false, push: false, telegram: false },
+    dueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
+    overdueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
+    dueProjects: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
     overdueProjects: {
         inApp: true,
         email: false,
         push: false,
         telegram: false,
+        ntfy: false,
     },
-    deferUntil: { inApp: true, email: false, push: false, telegram: false },
-    taskAssigned: { inApp: true, email: false, push: false, telegram: false },
+    deferUntil: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
+    taskAssigned: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
     habitReminders: {
         inApp: true,
         email: false,
         push: false,
         telegram: false,
+        ntfy: false,
     },
-    comments: { inApp: true, email: false, push: false, telegram: false },
+    comments: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
 };
 
-type Channel = 'inApp' | 'email' | 'push' | 'telegram';
+type Channel = keyof NotificationChannels;
 
 interface NotificationTypeRowProps {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
     description: string;
-    preferences: {
-        inApp: boolean;
-        email: boolean;
-        push: boolean;
-        telegram: boolean;
-    };
-    onToggle: (
-        channel: 'inApp' | 'email' | 'push' | 'telegram',
-        value: boolean
-    ) => void;
+    preferences: NotificationChannels;
+    onToggle: (channel: Channel, value: boolean) => void;
     telegramConfigured: boolean;
     pushAvailable: boolean;
+    ntfyConfigured: boolean;
 }
 
 const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
@@ -70,9 +102,10 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
     onToggle,
     telegramConfigured,
     pushAvailable,
+    ntfyConfigured,
 }) => {
     const renderToggle = (
-        channel: 'inApp' | 'email' | 'push' | 'telegram',
+        channel: Channel,
         isEnabled: boolean,
         isAvailable: boolean
     ) => (
@@ -129,6 +162,9 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
                     telegramConfigured
                 )}
             </td>
+            <td className="py-4 px-4 text-center">
+                {renderToggle('ntfy', !!preferences.ntfy, ntfyConfigured)}
+            </td>
         </tr>
     );
 };
@@ -149,6 +185,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
     } | null>(null);
     const [pushState, setPushState] = React.useState<PushState | null>(null);
     const [pushDevices, setPushDevices] = React.useState<number>(0);
+    const [ntfyConfigured, setNtfyConfigured] = React.useState(false);
 
     // Fetch profile data to check telegram configuration
     React.useEffect(() => {
@@ -182,7 +219,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 
     const handleToggle = (
         notificationType: keyof NotificationPreferences,
-        channel: 'inApp' | 'email' | 'push' | 'telegram',
+        channel: Channel,
         value: boolean
     ) => {
         const updatedPreferences = {
@@ -247,6 +284,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
             email: t('notifications.channels.email', 'Email'),
             push: t('notifications.channels.push', 'Push'),
             telegram: t('notifications.channels.telegram', 'Telegram'),
+            ntfy: t('notifications.channels.ntfy', 'ntfy'),
         })[channel];
 
     const channelAvailable: Record<Channel, boolean> = {
@@ -254,6 +292,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         email: false,
         push: pushAvailable,
         telegram: telegramConfigured,
+        ntfy: ntfyConfigured,
     };
 
     const renderTestButton = (channel: Channel) => (
@@ -290,6 +329,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
             </p>
 
             <PushDeviceCard onStateChange={setPushState} />
+            <NtfyCard onConfiguredChange={setNtfyConfigured} />
 
             {/* Notifications Table */}
             <div className="overflow-x-auto">
@@ -323,6 +363,9 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                     'Telegram'
                                 )}
                             </th>
+                            <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                {t('notifications.channels.ntfy', 'ntfy')}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -342,6 +385,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            ntfyConfigured={ntfyConfigured}
                         />
                         <NotificationTypeRow
                             icon={ExclamationTriangleIcon}
@@ -359,6 +403,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            ntfyConfigured={ntfyConfigured}
                         />
                         <NotificationTypeRow
                             icon={ClockIcon}
@@ -376,6 +421,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            ntfyConfigured={ntfyConfigured}
                         />
                         <NotificationTypeRow
                             icon={BellIcon}
@@ -393,6 +439,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            ntfyConfigured={ntfyConfigured}
                         />
                         <NotificationTypeRow
                             icon={ChatBubbleLeftRightIcon}
@@ -410,6 +457,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            ntfyConfigured={ntfyConfigured}
                         />
                         <NotificationTypeRow
                             icon={FireIcon}
@@ -427,6 +475,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            ntfyConfigured={ntfyConfigured}
                         />
                         <NotificationTypeRow
                             icon={FolderIcon}
@@ -444,6 +493,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            ntfyConfigured={ntfyConfigured}
                         />
                         <NotificationTypeRow
                             icon={FolderOpenIcon}
@@ -461,6 +511,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            ntfyConfigured={ntfyConfigured}
                         />
                     </tbody>
                     <tfoot>
@@ -472,7 +523,13 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 )}
                             </td>
                             {(
-                                ['inApp', 'email', 'push', 'telegram'] as const
+                                [
+                                    'inApp',
+                                    'email',
+                                    'push',
+                                    'telegram',
+                                    'ntfy',
+                                ] as const
                             ).map((channel) => (
                                 <td
                                     key={channel}
@@ -502,7 +559,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     </span>{' '}
                     {t(
                         'notifications.info.message',
-                        'Email notifications are coming soon. In-app, Push and Telegram notifications are available.'
+                        'Email notifications are coming soon. In-app, Push, Telegram and ntfy notifications are available.'
                     )}
                 </p>
             </div>

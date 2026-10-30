@@ -2,6 +2,8 @@ const {
     shouldSendInAppNotification,
     shouldSendPushNotification,
     deliverySources,
+    appDeliverySources,
+    shouldSendNtfyNotification,
     getDefaultNotificationPreferences,
     ensureNotificationPreferences,
     NOTIFICATION_TYPE_MAPPING,
@@ -18,48 +20,56 @@ describe('notificationPreferences utils', () => {
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 overdueTasks: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 dueProjects: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 overdueProjects: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 deferUntil: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 taskAssigned: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 habitReminders: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 comments: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
             });
         });
@@ -264,12 +274,14 @@ describe('notificationPreferences utils', () => {
                     email: true,
                     push: false,
                     telegram: true,
+                    ntfy: false,
                 },
                 overdueTasks: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
             };
 
@@ -285,18 +297,21 @@ describe('notificationPreferences utils', () => {
                 email: false,
                 push: false,
                 telegram: false,
+                ntfy: false,
             });
             expect(result.overdueProjects).toEqual({
                 inApp: true,
                 email: false,
                 push: false,
                 telegram: false,
+                ntfy: false,
             });
             expect(result.deferUntil).toEqual({
                 inApp: true,
                 email: false,
                 push: false,
                 telegram: false,
+                ntfy: false,
             });
         });
 
@@ -308,18 +323,20 @@ describe('notificationPreferences utils', () => {
 
             const result = ensureNotificationPreferences(input);
 
-            // Should add missing push and telegram channels
+            // Should add missing push, telegram and ntfy channels
             expect(result.dueTasks).toEqual({
                 inApp: false,
                 email: true,
                 push: false,
                 telegram: false,
+                ntfy: false,
             });
             expect(result.overdueTasks).toEqual({
                 inApp: true,
                 email: false,
                 push: false,
                 telegram: false,
+                ntfy: false,
             });
         });
 
@@ -330,48 +347,56 @@ describe('notificationPreferences utils', () => {
                     email: true,
                     push: false,
                     telegram: true,
+                    ntfy: false,
                 },
                 overdueTasks: {
                     inApp: true,
                     email: false,
                     push: true,
                     telegram: false,
+                    ntfy: false,
                 },
                 dueProjects: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 overdueProjects: {
                     inApp: false,
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 deferUntil: {
                     inApp: true,
                     email: true,
                     push: false,
                     telegram: true,
+                    ntfy: false,
                 },
                 taskAssigned: {
                     inApp: false,
                     email: true,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
                 habitReminders: {
                     inApp: false,
                     email: false,
                     push: false,
                     telegram: true,
+                    ntfy: false,
                 },
                 comments: {
                     inApp: true,
                     email: false,
                     push: true,
                     telegram: false,
+                    ntfy: false,
                 },
             };
 
@@ -388,6 +413,7 @@ describe('notificationPreferences utils', () => {
                     email: false,
                     push: false,
                     telegram: false,
+                    ntfy: false,
                 },
             };
 
@@ -399,6 +425,7 @@ describe('notificationPreferences utils', () => {
                 email: false,
                 push: false,
                 telegram: false,
+                ntfy: false,
             });
 
             // Valid type should be preserved
@@ -452,6 +479,35 @@ describe('notificationPreferences utils', () => {
             ]);
             expect(deliverySources(user, 'task_due_soon')).toEqual(['push']);
             expect(deliverySources(user, 'project_overdue')).toEqual([]);
+        });
+
+        it('adds ntfy after push, and appDeliverySources leaves Telegram out', () => {
+            const user = {
+                notification_preferences: {
+                    dueTasks: {
+                        inApp: true,
+                        telegram: true,
+                        push: true,
+                        ntfy: true,
+                    },
+                    habitReminders: { inApp: true, ntfy: true },
+                },
+            };
+            expect(deliverySources(user, 'task_due_soon')).toEqual([
+                'telegram',
+                'push',
+                'ntfy',
+            ]);
+            expect(appDeliverySources(user, 'task_due_soon')).toEqual([
+                'push',
+                'ntfy',
+            ]);
+            expect(appDeliverySources(user, 'habitReminders')).toEqual([
+                'ntfy',
+            ]);
+            expect(shouldSendNtfyNotification(user, 'task_overdue')).toBe(
+                false
+            );
         });
     });
 });

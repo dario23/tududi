@@ -3,24 +3,62 @@
  */
 
 const DEFAULT_PREFERENCES = {
-    dueTasks: { inApp: true, email: false, push: false, telegram: false },
-    overdueTasks: { inApp: true, email: false, push: false, telegram: false },
-    dueProjects: { inApp: true, email: false, push: false, telegram: false },
+    dueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
+    overdueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
+    dueProjects: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
     overdueProjects: {
         inApp: true,
         email: false,
         push: false,
         telegram: false,
+        ntfy: false,
     },
-    deferUntil: { inApp: true, email: false, push: false, telegram: false },
-    taskAssigned: { inApp: true, email: false, push: false, telegram: false },
+    deferUntil: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
+    taskAssigned: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
     habitReminders: {
         inApp: true,
         email: false,
         push: false,
         telegram: false,
+        ntfy: false,
     },
-    comments: { inApp: true, email: false, push: false, telegram: false },
+    comments: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        ntfy: false,
+    },
 };
 
 /**
@@ -107,6 +145,36 @@ function shouldSendPushNotification(user, notificationType) {
     return prefs[prefKey].push === true;
 }
 
+// ntfy is opt-in per type too.
+function shouldSendNtfyNotification(user, notificationType) {
+    if (!user || !user.notification_preferences) {
+        return false;
+    }
+
+    const prefs = user.notification_preferences;
+    const prefKey =
+        NOTIFICATION_TYPE_MAPPING[notificationType] || notificationType;
+
+    if (!prefs[prefKey]) {
+        return false;
+    }
+
+    return prefs[prefKey].ntfy === true;
+}
+
+// Push and ntfy, which Notification.createNotification delivers itself. The
+// scheduled checks send Telegram on their own, batched per user.
+function appDeliverySources(user, notificationType) {
+    const sources = [];
+    if (shouldSendPushNotification(user, notificationType)) {
+        sources.push('push');
+    }
+    if (shouldSendNtfyNotification(user, notificationType)) {
+        sources.push('ntfy');
+    }
+    return sources;
+}
+
 // The extra delivery channels to pass as `sources` to
 // Notification.createNotification for one preference key.
 function deliverySources(user, notificationType) {
@@ -114,9 +182,7 @@ function deliverySources(user, notificationType) {
     if (shouldSendTelegramNotification(user, notificationType)) {
         sources.push('telegram');
     }
-    if (shouldSendPushNotification(user, notificationType)) {
-        sources.push('push');
-    }
+    sources.push(...appDeliverySources(user, notificationType));
     return sources;
 }
 
@@ -163,6 +229,10 @@ function ensureNotificationPreferences(preferences) {
                     preferences[key].telegram !== undefined
                         ? preferences[key].telegram
                         : defaults[key].telegram,
+                ntfy:
+                    preferences[key].ntfy !== undefined
+                        ? preferences[key].ntfy
+                        : defaults[key].ntfy,
             };
         } else {
             // Missing preference type, use default
@@ -177,6 +247,8 @@ module.exports = {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
     shouldSendPushNotification,
+    shouldSendNtfyNotification,
+    appDeliverySources,
     deliverySources,
     getDefaultNotificationPreferences,
     ensureNotificationPreferences,

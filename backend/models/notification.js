@@ -79,6 +79,7 @@ module.exports = (sequelize) => {
                             'mobile',
                             'email',
                             'push',
+                            'ntfy',
                         ];
                         const invalidSources = value.filter(
                             (s) => !validSources.includes(s)
@@ -186,6 +187,10 @@ module.exports = (sequelize) => {
             await sendPushNotification(notification);
         }
 
+        if (sources.includes('ntfy')) {
+            await sendNtfyNotification(notification);
+        }
+
         return notification;
     };
 
@@ -211,6 +216,30 @@ module.exports = (sequelize) => {
             }
         } catch (error) {
             console.error('Failed to send push notification:', error);
+        }
+    }
+
+    async function sendNtfyNotification(notificationInstance) {
+        try {
+            // Same 24-hour guard as push: due and overdue reminders are
+            // recreated on every scheduler run.
+            if (
+                notificationInstance.wasChannelRecentlySent(
+                    'ntfy',
+                    24 * 60 * 60 * 1000
+                )
+            ) {
+                return;
+            }
+
+            const ntfyService = require('../modules/ntfy/service');
+            const sent =
+                await ntfyService.sendNotification(notificationInstance);
+            if (sent) {
+                await notificationInstance.markChannelAsSent('ntfy');
+            }
+        } catch (error) {
+            console.error('Failed to send ntfy notification:', error.message);
         }
     }
 

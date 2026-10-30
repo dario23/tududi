@@ -58,6 +58,8 @@ const UpgradeModal: React.FC = () => {
                 return t('billing.feature.caldav', 'CalDAV sync');
             case 'telegram':
                 return t('billing.feature.telegram', 'the Telegram bot');
+            case 'ntfy':
+                return t('billing.feature.ntfy', 'ntfy notifications');
             case 'backups_import':
                 return t('billing.feature.backups_import', 'backup import');
             case 'attachments':

@@ -99,6 +99,14 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+            ntfy_topic_url: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            ntfy_token_encrypted: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            },
             task_summary_enabled: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

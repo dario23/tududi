@@ -16,6 +16,7 @@ export interface PlanFeatures {
     caldav: boolean;
     backups_import: boolean;
     telegram: boolean;
+    ntfy?: boolean;
     attachments: boolean;
     public_notes?: boolean;
 }

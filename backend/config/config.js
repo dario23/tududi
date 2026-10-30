@@ -384,6 +384,13 @@ const config = {
         allowPrivateHosts: process.env.CALDAV_ALLOW_PRIVATE_HOSTS === 'true',
     },
 
+    ntfy: {
+        // ntfy servers on loopback, LAN or other private addresses (a
+        // self-hosted ntfy next to tududi) are refused unless the operator
+        // opts in. Link-local addresses stay blocked either way.
+        allowPrivateHosts: process.env.NTFY_ALLOW_PRIVATE_HOSTS === 'true',
+    },
+
     rateLimiting: {
         // Disable rate limiting in test environment
         enabled:

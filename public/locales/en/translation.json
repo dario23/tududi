@@ -2470,7 +2470,8 @@
       "backups_import": "backup import",
       "attachments": "attachments",
       "public_notes": "public notes",
-      "members": "adding members"
+      "members": "adding members",
+      "ntfy": "ntfy notifications"
     },
     "seatCovered": "Your seat is paid by {{name}}.",
     "workspaceOwner": "the workspace owner",
@@ -2660,7 +2661,8 @@
       "inApp": "In-app",
       "email": "Email",
       "push": "Push",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "ntfy": "ntfy"
     },
     "types": {
       "dueTasks": "Due Tasks",
@@ -2698,7 +2700,7 @@
     },
     "info": {
       "title": "Note:",
-      "message": "Email notifications are coming soon. In-app, Push and Telegram notifications are available."
+      "message": "Email notifications are coming soon. In-app, Push, Telegram and ntfy notifications are available."
     },
     "push": {
       "title": "Push notifications on this device",
@@ -2709,6 +2711,22 @@
       "denied": "Notifications are blocked for tududi. Allow them in your browser or system settings, then come back here.",
       "enable": "Turn on",
       "disable": "Turn off",
+      "failed": "Something went wrong. Please try again."
+    },
+    "ntfy": {
+      "title": "ntfy",
+      "prompt": "Send notifications to a topic on ntfy.sh or your own ntfy server, and get them in the ntfy app on your phone.",
+      "configured": "Notifications go to this ntfy topic. Choose which ones in the ntfy column below.",
+      "topicUrl": "Topic address",
+      "token": "Access token (optional)",
+      "tokenSaved": "Saved. Type a new one to replace it.",
+      "hint": "Anyone who knows a topic name on ntfy.sh can read it, so pick one that is hard to guess, or use a protected topic with an access token.",
+      "save": "Save",
+      "saved": "Saved.",
+      "removeToken": "Remove token",
+      "tokenRemoved": "Access token removed.",
+      "remove": "Turn off",
+      "removed": "ntfy is turned off.",
       "failed": "Something went wrong. Please try again."
     }
   },

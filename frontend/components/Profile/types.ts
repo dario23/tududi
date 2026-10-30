@@ -68,55 +68,24 @@ export interface SidebarSettings {
     sectionOrder?: string[];
 }
 
+export interface NotificationChannels {
+    inApp: boolean;
+    email: boolean;
+    push: boolean;
+    telegram: boolean;
+    // Missing on preferences saved before ntfy existed.
+    ntfy?: boolean;
+}
+
 export interface NotificationPreferences {
-    dueTasks: {
-        inApp: boolean;
-        email: boolean;
-        push: boolean;
-        telegram: boolean;
-    };
-    overdueTasks: {
-        inApp: boolean;
-        email: boolean;
-        push: boolean;
-        telegram: boolean;
-    };
-    dueProjects: {
-        inApp: boolean;
-        email: boolean;
-        push: boolean;
-        telegram: boolean;
-    };
-    overdueProjects: {
-        inApp: boolean;
-        email: boolean;
-        push: boolean;
-        telegram: boolean;
-    };
-    deferUntil: {
-        inApp: boolean;
-        email: boolean;
-        push: boolean;
-        telegram: boolean;
-    };
-    taskAssigned: {
-        inApp: boolean;
-        email: boolean;
-        push: boolean;
-        telegram: boolean;
-    };
-    habitReminders: {
-        inApp: boolean;
-        email: boolean;
-        push: boolean;
-        telegram: boolean;
-    };
-    comments: {
-        inApp: boolean;
-        email: boolean;
-        push: boolean;
-        telegram: boolean;
-    };
+    dueTasks: NotificationChannels;
+    overdueTasks: NotificationChannels;
+    dueProjects: NotificationChannels;
+    overdueProjects: NotificationChannels;
+    deferUntil: NotificationChannels;
+    taskAssigned: NotificationChannels;
+    habitReminders: NotificationChannels;
+    comments: NotificationChannels;
 }
 
 export interface Profile {
