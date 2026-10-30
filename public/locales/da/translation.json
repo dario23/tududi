@@ -2937,7 +2937,19 @@
     },
     "durationMinutes": "{{minutes}} min",
     "durationHours": "{{hours}} t",
-    "durationHoursMinutes": "{{hours}} t {{minutes}} min"
+    "durationHoursMinutes": "{{hours}} t {{minutes}} min",
+    "planTomorrow": "Planlæg i morgen",
+    "planToday": "Planlæg i dag",
+    "savePlan": "Gem plan",
+    "endDay": {
+      "button": "Afslut dagen",
+      "title": "Afslut dagen",
+      "carryTitle": "Flyt til i morgen",
+      "confirm": "Afslut dagen",
+      "confirmCarry": "Flyt {{count}} og afslut dagen",
+      "endedTitle": "Dagen er færdig",
+      "reopen": "Genåbn dagen"
+    }
   },
   "capture": {
     "add": "Tilføj",

@@ -2935,7 +2935,19 @@
     },
     "durationMinutes": "{{minutes}}分钟",
     "durationHours": "{{hours}}小时",
-    "durationHoursMinutes": "{{hours}}小时{{minutes}}分钟"
+    "durationHoursMinutes": "{{hours}}小时{{minutes}}分钟",
+    "planTomorrow": "计划明天",
+    "planToday": "计划今天",
+    "savePlan": "保存计划",
+    "endDay": {
+      "button": "结束今天",
+      "title": "结束今天",
+      "carryTitle": "移到明天",
+      "confirm": "结束今天",
+      "confirmCarry": "移动 {{count}} 项并结束今天",
+      "endedTitle": "今天已完成",
+      "reopen": "重新打开今天"
+    }
   },
   "capture": {
     "add": "添加",

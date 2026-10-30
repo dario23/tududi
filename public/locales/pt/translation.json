@@ -2940,7 +2940,19 @@
     },
     "durationMinutes": "{{minutes}} min",
     "durationHours": "{{hours}} h",
-    "durationHoursMinutes": "{{hours}} h {{minutes}} min"
+    "durationHoursMinutes": "{{hours}} h {{minutes}} min",
+    "planTomorrow": "Planejar amanhã",
+    "planToday": "Planejar hoje",
+    "savePlan": "Salvar plano",
+    "endDay": {
+      "button": "Encerrar o dia",
+      "title": "Encerrar o dia",
+      "carryTitle": "Mover para amanhã",
+      "confirm": "Encerrar o dia",
+      "confirmCarry": "Mover {{count}} e encerrar o dia",
+      "endedTitle": "Dia concluído",
+      "reopen": "Reabrir o dia"
+    }
   },
   "capture": {
     "add": "Adicionar",

@@ -2951,7 +2951,19 @@
         },
         "durationMinutes": "{{minutes}} min",
         "durationHours": "{{hours}} h",
-        "durationHoursMinutes": "{{hours}} h {{minutes}} min"
+        "durationHoursMinutes": "{{hours}} h {{minutes}} min",
+        "planTomorrow": "Naplánovať zajtrajšok",
+        "planToday": "Naplánovať dnešok",
+        "savePlan": "Uložiť plán",
+        "endDay": {
+            "button": "Ukončiť deň",
+            "title": "Ukončiť deň",
+            "carryTitle": "Presunúť na zajtra",
+            "confirm": "Ukončiť deň",
+            "confirmCarry": "Presunúť {{count}} a ukončiť deň",
+            "endedTitle": "Deň hotový",
+            "reopen": "Znovu otvoriť deň"
+        }
     },
     "relations": {
         "title": "Vzťahy",

@@ -113,6 +113,16 @@ class DailyPlanRepository {
         return plan;
     }
 
+    async setConcluded(userId, planDate, concluded) {
+        const plan = await this.findOrCreatePlan(userId, planDate);
+        if (concluded && !plan.concluded_at) {
+            await plan.update({ concluded_at: new Date() });
+        } else if (!concluded && plan.concluded_at) {
+            await plan.update({ concluded_at: null });
+        }
+        return plan;
+    }
+
     async saveWrapUp(userId, planDate, wrapUp) {
         const plan = await this.findOrCreatePlan(userId, planDate);
         await plan.update({ ai_wrap_up: wrapUp });
@@ -166,6 +176,25 @@ class DailyPlanRepository {
         if (tagged.length === 0) return [];
         return Task.findAll({
             where: { id: { [Op.in]: tagged.map((task) => task.id) } },
+            include: getTaskIncludeConfigLight(),
+        });
+    }
+
+    // Open top-level tasks due in the range. Planning a later day uses it
+    // for that day's due-today group, which the Today lists do not cover.
+    async findOpenTasksDueBetween(visibleWhere, start, end) {
+        return Task.findAll({
+            where: {
+                [Op.and]: [
+                    visibleWhere,
+                    {
+                        status: { [Op.notIn]: OPEN_STATUSES_EXCLUDED },
+                        parent_task_id: null,
+                        recurring_parent_id: null,
+                        due_date: { [Op.between]: [start, end] },
+                    },
+                ],
+            },
             include: getTaskIncludeConfigLight(),
         });
     }

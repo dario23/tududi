@@ -7,6 +7,7 @@ import {
     fetchDailyPlan,
     fetchPlanCandidates,
     saveDailyPlanItems,
+    concludeDailyPlan,
 } from '../../../utils/dailyPlanService';
 import {
     fetchCalendarEvents,
@@ -100,6 +101,7 @@ jest.mock('../../../utils/dailyPlanService', () => ({
     fetchDailyPlan: jest.fn(),
     fetchPlanCandidates: jest.fn(),
     saveDailyPlanItems: jest.fn(),
+    concludeDailyPlan: jest.fn(),
 }));
 
 jest.mock('../../../utils/calendarFeedsService', () => ({
@@ -540,6 +542,63 @@ describe('TodayPage', () => {
         expect(
             screen.queryByTestId('sortable-agenda-task-timed')
         ).not.toBeInTheDocument();
+    });
+
+    it('ends the day, moving the chosen unfinished tasks to tomorrow', async () => {
+        const plan = startedPlan([
+            {
+                task_uid: 't1',
+                task: { uid: 't1', name: 'Write spec', status: 0 },
+            },
+            {
+                task_uid: 't2',
+                task: { uid: 't2', name: 'Pay invoice', status: 2 },
+            },
+        ]);
+        (fetchDailyPlan as jest.Mock).mockResolvedValue(plan);
+        (concludeDailyPlan as jest.Mock).mockResolvedValue({
+            ...plan,
+            plan: { ...plan.plan, concluded_at: '2026-09-24T18:00:00Z' },
+        });
+
+        render(<TodayPage />);
+        fireEvent.click(await screen.findByTestId('end-day-button'));
+
+        const card = screen.getByTestId('end-day-card');
+        expect(card).toHaveTextContent('Write spec');
+        expect(card).not.toHaveTextContent('Pay invoice');
+        fireEvent.click(screen.getByTestId('end-day-confirm'));
+
+        await waitFor(() =>
+            expect(concludeDailyPlan).toHaveBeenCalledWith('2026-09-24', ['t1'])
+        );
+        expect(
+            await screen.findByTestId('day-ended-plan-tomorrow')
+        ).toHaveAttribute('href', '/today/plan?date=2026-09-25');
+        expect(screen.queryByTestId('end-day-button')).not.toBeInTheDocument();
+    });
+
+    it('ends the day without moving anything when nothing is ticked', async () => {
+        const plan = startedPlan([
+            {
+                task_uid: 't1',
+                task: { uid: 't1', name: 'Write spec', status: 0 },
+            },
+        ]);
+        (fetchDailyPlan as jest.Mock).mockResolvedValue(plan);
+        (concludeDailyPlan as jest.Mock).mockResolvedValue(plan);
+
+        render(<TodayPage />);
+        fireEvent.click(await screen.findByTestId('end-day-button'));
+        fireEvent.click(screen.getByRole('checkbox'));
+        expect(screen.getByTestId('end-day-confirm')).toHaveTextContent(
+            'End day'
+        );
+        fireEvent.click(screen.getByTestId('end-day-confirm'));
+
+        await waitFor(() =>
+            expect(concludeDailyPlan).toHaveBeenCalledWith('2026-09-24', [])
+        );
     });
 });
 

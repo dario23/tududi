@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import {
     AiWrapUp,
@@ -34,6 +34,7 @@ import { useDailyPlanProgress } from '../../store/dailyPlanStore';
 import { useStore } from '../../store/useStore';
 import TodayUnplanned from './TodayUnplanned';
 import TodayPlanned from './TodayPlanned';
+import EndDayCard from './EndDayCard';
 import { mergeVisibleOrder } from '../Shared/sortableList';
 import { buildTips, rescheduleMissed } from './tips';
 import { useDailyQuote } from './useDailyQuote';
@@ -87,6 +88,7 @@ const TodayPage: React.FC = () => {
     const [candidates, setCandidates] = useState<PlanCandidates | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [busyUid, setBusyUid] = useState<string | null>(null);
+    const [ending, setEnding] = useState(false);
     const [now, setNow] = useState(() =>
         minuteOfDay(new Date(), getUserTimezone())
     );
@@ -159,6 +161,7 @@ const TodayPage: React.FC = () => {
     const plan = planResponse?.plan ?? null;
     const items = useMemo(() => plan?.items ?? [], [plan]);
     const started = !!plan?.started_at;
+    const concluded = !!plan?.concluded_at;
     // A row can report an edit from an older render (a delayed refetch), so
     // edits are checked against the latest items.
     const itemsRef = useRef(items);
@@ -469,6 +472,17 @@ const TodayPage: React.FC = () => {
                                         }
                                     )}`}
                             </span>
+                            {!concluded && !ending && (
+                                <button
+                                    type="button"
+                                    onClick={() => setEnding(true)}
+                                    className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
+                                    data-testid="end-day-button"
+                                >
+                                    <MoonIcon className="h-4 w-4" />
+                                    {t('dailyPlan.endDay.button', 'End day')}
+                                </button>
+                            )}
                             <Link
                                 to="/today/plan"
                                 className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
@@ -521,6 +535,20 @@ const TodayPage: React.FC = () => {
                         showsFeeds={showsFeeds}
                         calendarEnabled={calendarEnabled}
                         hasDraft={items.length > 0}
+                    />
+                )}
+
+                {planResponse && started && (concluded || ending) && (
+                    <EndDayCard
+                        key={concluded ? 'ended' : 'ending'}
+                        date={planResponse.date}
+                        items={items}
+                        concluded={concluded}
+                        onSaved={(saved) => {
+                            setPlanResponse(saved);
+                            setEnding(false);
+                        }}
+                        onCancel={() => setEnding(false)}
                     />
                 )}
 

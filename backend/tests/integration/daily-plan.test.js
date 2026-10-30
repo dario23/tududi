@@ -165,6 +165,100 @@ describe('Daily plan routes', () => {
         expect(await DailyPlanItem.count()).toBe(0);
     });
 
+    it('ends the day, carrying chosen tasks to tomorrow, and reopens it', async () => {
+        const done = await makeTask({ status: Task.STATUS.DONE });
+        const open = await makeTask({ name: 'Unfinished' });
+        await agent.put(`/api/daily-plan/${today}`).send({
+            items: [
+                { task_uid: done.uid, start_minute: 480 },
+                { task_uid: open.uid, start_minute: 540 },
+            ],
+        });
+        const tomorrow = moment
+            .tz('Europe/Athens')
+            .add(1, 'day')
+            .format('YYYY-MM-DD');
+
+        const ended = await agent
+            .post(`/api/daily-plan/${today}/conclude`)
+            .send({ task_uids: [open.uid] });
+        const next = await agent.get(`/api/daily-plan?date=${tomorrow}`);
+
+        expect(ended.status).toBe(200);
+        expect(ended.body.plan.concluded_at).toBeTruthy();
+        expect(ended.body.plan.items).toHaveLength(2);
+        expect(next.body.plan.items.map((i) => i.task_uid)).toEqual([open.uid]);
+        expect(next.body.plan.items[0].start_minute).toBeNull();
+        expect(next.body.plan.concluded_at).toBeNull();
+
+        const reopened = await agent.delete(
+            `/api/daily-plan/${today}/conclude`
+        );
+        expect(reopened.status).toBe(200);
+        expect(reopened.body.plan.concluded_at).toBeNull();
+    });
+
+    it('ends a day without carrying anything over', async () => {
+        const res = await agent.post(`/api/daily-plan/${today}/conclude`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.plan.concluded_at).toBeTruthy();
+        expect(await DailyPlan.count()).toBe(1);
+    });
+
+    it('rejects task_uids that are not a list when ending the day', async () => {
+        const res = await agent
+            .post(`/api/daily-plan/${today}/conclude`)
+            .send({ task_uids: 'abc' });
+
+        expect(res.status).toBe(400);
+    });
+
+    it('groups candidates for tomorrow by tomorrow', async () => {
+        const tomorrow = moment
+            .tz('Europe/Athens')
+            .add(1, 'day')
+            .format('YYYY-MM-DD');
+        const dueToday = await agent
+            .post('/api/task')
+            .send({ name: 'Due today', due_date: today });
+        // Not in an in-progress project, so only the due-today group can
+        // bring it in.
+        const planned = await Project.create({
+            name: 'Someday project',
+            user_id: user.id,
+            status: 'planned',
+        });
+        const dueTomorrow = await agent.post('/api/task').send({
+            name: 'Due tomorrow',
+            due_date: tomorrow,
+            project_id: planned.id,
+        });
+
+        const res = await agent.get(
+            `/api/daily-plan/candidates?date=${tomorrow}`
+        );
+        const uids = (group) => res.body[group].map((task) => task.uid);
+
+        expect(res.status).toBe(200);
+        expect(uids('overdue')).toContain(dueToday.body.uid);
+        expect(uids('due_today')).toContain(dueTomorrow.body.uid);
+        expect(uids('suggested')).not.toContain(dueTomorrow.body.uid);
+    });
+
+    it('rejects candidates for a day before today', async () => {
+        const yesterday = moment
+            .tz('Europe/Athens')
+            .subtract(1, 'day')
+            .format('YYYY-MM-DD');
+
+        const res = await agent.get(
+            `/api/daily-plan/candidates?date=${yesterday}`
+        );
+
+        expect(res.status).toBe(400);
+    });
+
     it('lists candidates grouped once each, plus open inbox items', async () => {
         const yesterday = moment
             .tz('Europe/Athens')

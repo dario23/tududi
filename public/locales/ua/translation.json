@@ -2945,7 +2945,19 @@
     },
     "durationMinutes": "{{minutes}} хв",
     "durationHours": "{{hours}} год",
-    "durationHoursMinutes": "{{hours}} год {{minutes}} хв"
+    "durationHoursMinutes": "{{hours}} год {{minutes}} хв",
+    "planTomorrow": "Спланувати завтра",
+    "planToday": "Спланувати сьогодні",
+    "savePlan": "Зберегти план",
+    "endDay": {
+      "button": "Завершити день",
+      "title": "Завершити день",
+      "carryTitle": "Перенести на завтра",
+      "confirm": "Завершити день",
+      "confirmCarry": "Перенести {{count}} і завершити день",
+      "endedTitle": "День завершено",
+      "reopen": "Відкрити день знову"
+    }
   },
   "capture": {
     "add": "Додати",

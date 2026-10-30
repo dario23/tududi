@@ -33,6 +33,12 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // Set by "End day". Today then shows the day as done and offers
+            // to plan tomorrow.
+            concluded_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
             ai_wrap_up: {
                 type: DataTypes.JSON,
                 allowNull: true,

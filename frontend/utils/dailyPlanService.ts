@@ -33,6 +33,8 @@ export interface DailyPlan {
     uid: string;
     date: string;
     started_at: string | null;
+    // Set by "End day".
+    concluded_at?: string | null;
     ai_wrap_up?: AiWrapUp | null;
     items: DailyPlanItem[];
 }
@@ -166,9 +168,11 @@ export const fetchDailyPlan = async (
 
 // `suggestedLimit` asks for more suggestions than the Planning setting
 // sends at first; the planner raises it page by page from "Show more".
+// `date` plans a later day: the groups are then as of that day.
 export const fetchPlanCandidates = async (
     suggestedLimit?: number | null,
-    scope: FocusScopeParams = {}
+    scope: FocusScopeParams = {},
+    date?: string
 ): Promise<PlanCandidates> => {
     const response = await fetch(
         getApiPath(
@@ -176,6 +180,7 @@ export const fetchPlanCandidates = async (
                 suggested_limit: suggestedLimit
                     ? String(suggestedLimit)
                     : undefined,
+                date,
                 ...scope,
             })
         ),
@@ -374,5 +379,39 @@ export const carryOverTasks = async (
         }
     );
     await handleAuthResponse(response, 'Could not add the tasks.');
+    return response.json();
+};
+
+// "End day": marks the day done and adds `taskUids` to the next day's
+// plan without a time.
+export const concludeDailyPlan = async (
+    date: string,
+    taskUids: string[]
+): Promise<DailyPlanResponse> => {
+    const response = await fetch(
+        getApiPath(`daily-plan/${encodeURIComponent(date)}/conclude`),
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+            body: JSON.stringify({ task_uids: taskUids }),
+        }
+    );
+    await handleAuthResponse(response, 'Could not end the day.');
+    return response.json();
+};
+
+export const reopenDailyPlan = async (
+    date: string
+): Promise<DailyPlanResponse> => {
+    const response = await fetch(
+        getApiPath(`daily-plan/${encodeURIComponent(date)}/conclude`),
+        {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+        }
+    );
+    await handleAuthResponse(response, 'Could not reopen the day.');
     return response.json();
 };

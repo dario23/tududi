@@ -31,7 +31,6 @@ const {
     getSafeTimezone,
     getCurrentDateInTimezone,
     getDayBoundsInUTC,
-    getTodayBoundsInUTC,
 } = require('../../utils/timezone-utils');
 const { ValidationError, NotFoundError } = require('../../shared/errors');
 
@@ -208,6 +207,7 @@ async function serializePlan(plan, userId, timezone, scopeWhere = null) {
         uid: plan.uid,
         date: plan.plan_date,
         started_at: plan.started_at,
+        concluded_at: plan.concluded_at || null,
         ai_wrap_up: plan.ai_wrap_up || null,
         items: items
             .filter((item) => byId.has(item.task_id))
@@ -310,6 +310,34 @@ async function carryOver(user, date, taskUids) {
     return replaceItems(user, planDate, [...current, ...added]);
 }
 
+const nextDate = (date) =>
+    moment(date, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD');
+
+// "End day": marks the day done and appends the chosen unfinished tasks to
+// the next day's plan without a time. Returns the day's plan.
+async function concludePlan(user, date, taskUids = []) {
+    const timezone = getSafeTimezone(user.timezone);
+    const planDate = resolvePlanDate(date, timezone);
+    if (taskUids !== undefined && taskUids !== null) {
+        if (!Array.isArray(taskUids)) {
+            throw new ValidationError('task_uids must be a list of task uids');
+        }
+        if (taskUids.length > 0) {
+            await carryOver(user, nextDate(planDate), taskUids);
+        }
+    }
+    await repository.setConcluded(user.id, planDate, true);
+    return getPlan(user, planDate);
+}
+
+// Undoes "End day". Tasks already carried over stay on the next day.
+async function reopenPlan(user, date) {
+    const timezone = getSafeTimezone(user.timezone);
+    const planDate = resolvePlanDate(date, timezone);
+    await repository.setConcluded(user.id, planDate, false);
+    return getPlan(user, planDate);
+}
+
 // The `today` flag on the task API: true appends the task to today's plan,
 // false takes it off. Removing from a day with no plan creates nothing.
 async function setTaskOnToday(user, taskUid, onToday) {
@@ -361,32 +389,59 @@ function parseSuggestedLimit(value) {
 // planning settings decide which tasks count as suggested and how many are
 // shown at first; suggestedLimit raises that cap when the planner asks for
 // more, and suggested_total says how many there are in all.
+//
+// `date` plans a later day (never an earlier one): overdue then means due
+// before that day, due today means due on it, and defer dates and the
+// suggestion horizon count from the start of it.
 async function getCandidates(
     user,
-    { suggestedLimit = null, scopeQuery = null } = {}
+    { date = null, suggestedLimit = null, scopeQuery = null } = {}
 ) {
     const timezone = getSafeTimezone(user.timezone);
+    const planDate = resolvePlanDate(date, timezone);
+    const today = getCurrentDateInTimezone(timezone);
+    if (planDate < today) {
+        throw new ValidationError('date cannot be before today');
+    }
+    const laterDay = planDate > today;
+    const bounds = getDayBoundsInUTC(planDate, timezone);
+    const todayStart = new Date(bounds.start).getTime();
+    const todayEnd = new Date(bounds.end).getTime();
+    const now = laterDay ? todayStart : Date.now();
+
     const { order, suggestions } = await getPlanningSettings(user);
     const cap = suggestedLimit ?? suggestions.maxSuggestions;
     const scopeWhere = await scopeService.taskScopeWhere(
         scopeQuery ? await scopeService.resolveScope(scopeQuery, user.id) : null
     );
-    const [metrics, taggedToday] = await Promise.all([
-        computeTaskMetrics(user.id, timezone, null, suggestions, scopeWhere),
-        repository.findTasksTaggedToday(
-            scopeService.withScope(
-                {
-                    [Op.and]: [
-                        await permissionsService.ownershipOrPermissionWhere(
-                            'task',
-                            user.id
-                        ),
-                        await permissionsService.myWorkWhere(user.id),
-                    ],
-                },
-                scopeWhere
-            )
+    const myWorkWhere = scopeService.withScope(
+        {
+            [Op.and]: [
+                await permissionsService.ownershipOrPermissionWhere(
+                    'task',
+                    user.id
+                ),
+                await permissionsService.myWorkWhere(user.id),
+            ],
+        },
+        scopeWhere
+    );
+    const [metrics, taggedToday, dueOnDay] = await Promise.all([
+        computeTaskMetrics(
+            user.id,
+            timezone,
+            null,
+            laterDay ? { ...suggestions, asOf: now } : suggestions,
+            scopeWhere
         ),
+        repository.findTasksTaggedToday(myWorkWhere),
+        laterDay
+            ? repository.findOpenTasksDueBetween(
+                  myWorkWhere,
+                  bounds.start,
+                  bounds.end
+              )
+            : [],
     ]);
 
     // Groups follow the task's own due date, as Profile > Planning
@@ -394,10 +449,6 @@ async function getCandidates(
     // project, which put undated tasks under "Overdue". Started tasks that
     // are past due count as overdue here, so late work is never ranked below
     // fresh work.
-    const bounds = getTodayBoundsInUTC(timezone);
-    const todayStart = new Date(bounds.start).getTime();
-    const todayEnd = new Date(bounds.end).getTime();
-    const now = Date.now();
     const dueTime = (task) =>
         task.due_date ? new Date(task.due_date).getTime() : null;
     const isLate = (task) =>
@@ -423,6 +474,11 @@ async function getCandidates(
         due_today: [
             ...metrics.tasks_overdue.filter(isDueToday),
             ...metrics.tasks_due_today.filter(isDueToday),
+            ...dueOnDay.filter(
+                (task) =>
+                    !task.defer_until ||
+                    new Date(task.defer_until).getTime() <= todayEnd
+            ),
         ],
         in_progress: started,
         suggested: [
@@ -608,6 +664,8 @@ module.exports = {
     startPlan,
     clearPlan,
     carryOver,
+    concludePlan,
+    reopenPlan,
     setTaskOnToday,
     getCandidates,
     parseSuggestedLimit,

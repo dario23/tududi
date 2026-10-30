@@ -2945,7 +2945,19 @@
     },
     "durationMinutes": "{{minutes}} мин",
     "durationHours": "{{hours}} ч",
-    "durationHoursMinutes": "{{hours}} ч {{minutes}} мин"
+    "durationHoursMinutes": "{{hours}} ч {{minutes}} мин",
+    "planTomorrow": "Спланировать завтра",
+    "planToday": "Спланировать сегодня",
+    "savePlan": "Сохранить план",
+    "endDay": {
+      "button": "Завершить день",
+      "title": "Завершить день",
+      "carryTitle": "Перенести на завтра",
+      "confirm": "Завершить день",
+      "confirmCarry": "Перенести {{count}} и завершить день",
+      "endedTitle": "День завершён",
+      "reopen": "Открыть день снова"
+    }
   },
   "capture": {
     "add": "Добавить",

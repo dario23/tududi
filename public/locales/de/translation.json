@@ -2946,7 +2946,19 @@
     },
     "durationMinutes": "{{minutes}} Min.",
     "durationHours": "{{hours}} Std.",
-    "durationHoursMinutes": "{{hours}} Std. {{minutes}} Min."
+    "durationHoursMinutes": "{{hours}} Std. {{minutes}} Min.",
+    "planTomorrow": "Morgen planen",
+    "planToday": "Heute planen",
+    "savePlan": "Plan speichern",
+    "endDay": {
+      "button": "Tag beenden",
+      "title": "Den Tag beenden",
+      "carryTitle": "Auf morgen verschieben",
+      "confirm": "Tag beenden",
+      "confirmCarry": "{{count}} verschieben und Tag beenden",
+      "endedTitle": "Tag erledigt",
+      "reopen": "Tag wieder öffnen"
+    }
   },
   "capture": {
     "add": "Hinzufügen",

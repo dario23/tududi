@@ -5,7 +5,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CollisionDetection,
@@ -65,6 +65,7 @@ import { useAiAllowed, useTrialLock } from '../../hooks/useTrialStatus';
 import {
     DEFAULT_DURATION,
     SLOT_MINUTES,
+    addDays,
     busyMinutes,
     dayRange,
     findFreeSlot,
@@ -73,6 +74,7 @@ import {
     overlapsItems,
     plannedMinutes,
     intlLocale,
+    todayIn,
 } from './planUtils';
 
 type Mode = 'timeline' | 'list';
@@ -111,12 +113,6 @@ const useIsNarrow = () => {
         return () => media.removeEventListener?.('change', update);
     }, []);
     return !!narrow;
-};
-
-const addDays = (date: string, days: number) => {
-    const d = new Date(`${date}T12:00:00`);
-    d.setDate(d.getDate() + days);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
 // Pointer position for drops; keyboard drags have none.
@@ -160,7 +156,12 @@ const collisionDetection: CollisionDetection = (args) => {
     return hits.length > 0 ? hits : closestCenter(args);
 };
 
-const PlanMyDay: React.FC = () => {
+interface PlanDayProps {
+    // A later day to plan, such as tomorrow; undefined plans today.
+    planFor?: string;
+}
+
+const PlanDay: React.FC<PlanDayProps> = ({ planFor }) => {
     const { t, i18n } = useTranslation();
     const focus = useFocus();
     const focusId = focusKey(focus);
@@ -189,9 +190,12 @@ const PlanMyDay: React.FC = () => {
     const [dragLabel, setDragLabel] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [leaving, setLeaving] = useState(false);
-    const [now, setNow] = useState(() =>
+    const [clock, setClock] = useState(() =>
         minuteOfDay(new Date(), getUserTimezone())
     );
+    // A later day has not begun, so all of it is still ahead.
+    const laterDay = !!date && date > todayIn(getUserTimezone());
+    const now = laterDay ? 0 : clock;
     const aiSwitch = useStore(
         (state) => state.userSettingsStore.aiAssistantEnabled
     );
@@ -226,7 +230,7 @@ const PlanMyDay: React.FC = () => {
 
     useEffect(() => {
         const timer = setInterval(
-            () => setNow(minuteOfDay(new Date(), getUserTimezone())),
+            () => setClock(minuteOfDay(new Date(), getUserTimezone())),
             60 * 1000
         );
         return () => clearInterval(timer);
@@ -238,8 +242,8 @@ const PlanMyDay: React.FC = () => {
             try {
                 const scope = focusScopeParams(focus);
                 const [planResponse, candidateList] = await Promise.all([
-                    fetchDailyPlan(undefined, scope),
-                    fetchPlanCandidates(undefined, scope),
+                    fetchDailyPlan(planFor, scope),
+                    fetchPlanCandidates(undefined, scope, planFor),
                 ]);
                 if (cancelled) return;
                 setDate(planResponse.date);
@@ -260,7 +264,7 @@ const PlanMyDay: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [t, focusId]);
+    }, [t, focusId, planFor]);
 
     // Calendar feeds belong to the Calendar feature; with it off the day
     // is planned without events.
@@ -285,13 +289,17 @@ const PlanMyDay: React.FC = () => {
     useEffect(() => {
         const refresh = () => {
             if (document.visibilityState !== 'visible') return;
-            fetchPlanCandidates(suggestedLimit.current, focusScopeParams(focus))
+            fetchPlanCandidates(
+                suggestedLimit.current,
+                focusScopeParams(focus),
+                planFor
+            )
                 .then(setCandidates)
                 .catch(() => undefined);
         };
         document.addEventListener('visibilitychange', refresh);
         return () => document.removeEventListener('visibilitychange', refresh);
-    }, [focusId]);
+    }, [focusId, planFor]);
 
     // The server keeps each feed for a while; this asks it to fetch again.
     const refreshEvents = useCallback(async () => {
@@ -545,7 +553,8 @@ const PlanMyDay: React.FC = () => {
         try {
             const list = await fetchPlanCandidates(
                 next,
-                focusScopeParams(focus)
+                focusScopeParams(focus),
+                planFor
             );
             suggestedLimit.current = next;
             setCandidates(list);
@@ -558,7 +567,7 @@ const PlanMyDay: React.FC = () => {
         } finally {
             setLoadingMore(false);
         }
-    }, [candidates, loadingMore, t]);
+    }, [candidates, loadingMore, t, planFor]);
 
     const handleReschedule = async (
         task: Task,
@@ -919,11 +928,35 @@ const PlanMyDay: React.FC = () => {
         >
             <div className="flex h-full w-full flex-col gap-4 px-4 pb-4 pt-4 sm:px-6 lg:px-8">
                 <header className="flex shrink-0 flex-wrap items-center gap-x-6 gap-y-3">
-                    <h2 className="min-w-[16rem] flex-1 text-2xl font-light">
-                        {t('dailyPlan.planTitle', 'Plan {{date}}', {
-                            date: dateLabel,
-                        })}
-                    </h2>
+                    <div className="flex min-w-[16rem] flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <h2 className="text-2xl font-light">
+                            {t('dailyPlan.planTitle', 'Plan {{date}}', {
+                                date: dateLabel,
+                            })}
+                        </h2>
+                        {date && (
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    if (!(await flush())) return;
+                                    navigate(
+                                        laterDay
+                                            ? '/today/plan'
+                                            : `/today/plan?date=${addDays(date, 1)}`
+                                    );
+                                }}
+                                className="text-sm text-blue-600 underline-offset-2 hover:underline dark:text-blue-400"
+                                data-testid="plan-other-day"
+                            >
+                                {laterDay
+                                    ? t('dailyPlan.planToday', 'Plan today')
+                                    : t(
+                                          'dailyPlan.planTomorrow',
+                                          'Plan tomorrow'
+                                      )}
+                            </button>
+                        )}
+                    </div>
 
                     {candidates && (
                         <div
@@ -1130,17 +1163,29 @@ const PlanMyDay: React.FC = () => {
                                 )}
                             </div>
                         )}
-                        <button
-                            type="button"
-                            onClick={() => leave(true)}
-                            disabled={leaving || !date}
-                            className="min-h-[34px] rounded-lg px-3.5 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-                            data-testid="start-my-day"
-                        >
-                            {started
-                                ? t('dailyPlan.doneReplanning', 'Done')
-                                : t('dailyPlan.startMyDay', 'Start my day')}
-                        </button>
+                        {laterDay ? (
+                            <button
+                                type="button"
+                                onClick={() => leave(false)}
+                                disabled={leaving}
+                                className="min-h-[34px] rounded-lg px-3.5 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                                data-testid="save-later-plan"
+                            >
+                                {t('dailyPlan.savePlan', 'Save plan')}
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => leave(true)}
+                                disabled={leaving || !date}
+                                className="min-h-[34px] rounded-lg px-3.5 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                                data-testid="start-my-day"
+                            >
+                                {started
+                                    ? t('dailyPlan.doneReplanning', 'Done')
+                                    : t('dailyPlan.startMyDay', 'Start my day')}
+                            </button>
+                        )}
                     </div>
                 </header>
 
@@ -1318,6 +1363,18 @@ const PlanMyDay: React.FC = () => {
             </DragOverlay>
         </DndContext>
     );
+};
+
+// ?date= plans a later day, such as tomorrow; anything else plans today.
+// Each day gets its own planner, so nothing carries over between them.
+const PlanMyDay: React.FC = () => {
+    const [searchParams] = useSearchParams();
+    const requested = searchParams.get('date');
+    const planFor =
+        requested && /^\d{4}-\d{2}-\d{2}$/.test(requested)
+            ? requested
+            : undefined;
+    return <PlanDay key={planFor ?? 'today'} planFor={planFor} />;
 };
 
 export default PlanMyDay;

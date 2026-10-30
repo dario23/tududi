@@ -7,18 +7,13 @@ import {
     wrapUpDayWithAi,
 } from '../../utils/dailyPlanService';
 import { useToast } from '../Shared/ToastContext';
+import { addDays } from './planUtils';
 
 interface WrapUpCardProps {
     date: string;
     wrapUp: AiWrapUp | null;
     onGenerated: (wrapUp: AiWrapUp) => void;
 }
-
-const nextDate = (date: string) => {
-    const d = new Date(`${date}T12:00:00`);
-    d.setDate(d.getDate() + 1);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
 
 const WrapUpCard: React.FC<WrapUpCardProps> = ({
     date,
@@ -58,7 +53,7 @@ const WrapUpCard: React.FC<WrapUpCardProps> = ({
         if (selected.size === 0) return;
         setCarrying(true);
         try {
-            await carryOverTasks(nextDate(date), [...selected]);
+            await carryOverTasks(addDays(date, 1), [...selected]);
             showSuccessToast(
                 t('dailyPlan.ai.carried', '{{count}} tasks added to tomorrow', {
                     count: selected.size,

@@ -2937,7 +2937,19 @@
     },
     "durationMinutes": "{{minutes}} dk",
     "durationHours": "{{hours}} sa",
-    "durationHoursMinutes": "{{hours}} sa {{minutes}} dk"
+    "durationHoursMinutes": "{{hours}} sa {{minutes}} dk",
+    "planTomorrow": "Yarını planla",
+    "planToday": "Bugünü planla",
+    "savePlan": "Planı kaydet",
+    "endDay": {
+      "button": "Günü bitir",
+      "title": "Günü bitir",
+      "carryTitle": "Yarına taşı",
+      "confirm": "Günü bitir",
+      "confirmCarry": "{{count}} görevi taşı ve günü bitir",
+      "endedTitle": "Gün tamamlandı",
+      "reopen": "Günü yeniden aç"
+    }
   },
   "capture": {
     "add": "Ekle",

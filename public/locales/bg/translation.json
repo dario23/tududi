@@ -2937,7 +2937,19 @@
     },
     "durationMinutes": "{{minutes}} мин",
     "durationHours": "{{hours}} ч",
-    "durationHoursMinutes": "{{hours}} ч {{minutes}} мин"
+    "durationHoursMinutes": "{{hours}} ч {{minutes}} мин",
+    "planTomorrow": "Планирай утре",
+    "planToday": "Планирай днес",
+    "savePlan": "Запази плана",
+    "endDay": {
+      "button": "Приключи деня",
+      "title": "Приключи деня",
+      "carryTitle": "Премести за утре",
+      "confirm": "Приключи деня",
+      "confirmCarry": "Премести {{count}} и приключи деня",
+      "endedTitle": "Денят е приключен",
+      "reopen": "Отвори деня отново"
+    }
   },
   "capture": {
     "add": "Добави",

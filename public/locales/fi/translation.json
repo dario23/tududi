@@ -2937,7 +2937,19 @@
     },
     "durationMinutes": "{{minutes}} min",
     "durationHours": "{{hours}} h",
-    "durationHoursMinutes": "{{hours}} h {{minutes}} min"
+    "durationHoursMinutes": "{{hours}} h {{minutes}} min",
+    "planTomorrow": "Suunnittele huominen",
+    "planToday": "Suunnittele tämä päivä",
+    "savePlan": "Tallenna suunnitelma",
+    "endDay": {
+      "button": "Päätä päivä",
+      "title": "Päätä päivä",
+      "carryTitle": "Siirrä huomiselle",
+      "confirm": "Päätä päivä",
+      "confirmCarry": "Siirrä {{count}} ja päätä päivä",
+      "endedTitle": "Päivä valmis",
+      "reopen": "Avaa päivä uudelleen"
+    }
   },
   "capture": {
     "add": "Lisää",

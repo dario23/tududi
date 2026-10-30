@@ -2935,7 +2935,19 @@
     },
     "durationMinutes": "{{minutes}}分",
     "durationHours": "{{hours}}時間",
-    "durationHoursMinutes": "{{hours}}時間{{minutes}}分"
+    "durationHoursMinutes": "{{hours}}時間{{minutes}}分",
+    "planTomorrow": "明日を計画",
+    "planToday": "今日を計画",
+    "savePlan": "プランを保存",
+    "endDay": {
+      "button": "一日を終える",
+      "title": "一日を終える",
+      "carryTitle": "明日に移す",
+      "confirm": "一日を終える",
+      "confirmCarry": "{{count}}件を移して一日を終える",
+      "endedTitle": "今日は完了",
+      "reopen": "一日を再開"
+    }
   },
   "capture": {
     "add": "追加",

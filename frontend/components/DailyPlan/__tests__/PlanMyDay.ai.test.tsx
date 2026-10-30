@@ -7,11 +7,14 @@ import {
     estimateWithAi,
     fetchDailyPlan,
     fetchPlanCandidates,
+    startDailyPlan,
 } from '../../../utils/dailyPlanService';
 import { fetchCalendarEvents } from '../../../utils/calendarFeedsService';
 
 let aiEnabled = false;
 let calendarEnabled = true;
+let mockSearch = '';
+const mockNavigate = jest.fn();
 
 // A stable t, like the real one: the planner reloads when t changes.
 jest.mock('react-i18next', () => {
@@ -34,7 +37,8 @@ jest.mock('react-i18next', () => {
 });
 
 jest.mock('react-router-dom', () => ({
-    useNavigate: () => jest.fn(),
+    useNavigate: () => mockNavigate,
+    useSearchParams: () => [new URLSearchParams(mockSearch)],
     useLocation: () => ({ pathname: '/today/plan' }),
     Link: ({ to, children, className }: any) => (
         <a href={to} className={className}>
@@ -112,6 +116,7 @@ describe('PlanMyDay AI help', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         calendarEnabled = true;
+        mockSearch = '';
         (fetchDailyPlan as jest.Mock).mockResolvedValue({
             date: '2026-09-24',
             plan: {
@@ -207,5 +212,53 @@ describe('PlanMyDay AI help', () => {
 
         expect(await screen.findByText('Call bank')).toBeInTheDocument();
         expect(screen.queryByText('Pay invoice')).not.toBeInTheDocument();
+    });
+
+    it('offers to plan tomorrow from today', async () => {
+        render(<PlanMyDay />);
+
+        fireEvent.click(await screen.findByTestId('plan-other-day'));
+
+        expect(screen.getByTestId('plan-other-day')).toHaveTextContent(
+            'Plan tomorrow'
+        );
+        await waitFor(() =>
+            expect(mockNavigate).toHaveBeenCalledWith(
+                '/today/plan?date=2026-09-25'
+            )
+        );
+        expect(fetchPlanCandidates).toHaveBeenCalledWith(
+            undefined,
+            {},
+            undefined
+        );
+    });
+
+    it('plans a later day without starting it', async () => {
+        mockSearch = 'date=2099-01-15';
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2099-01-15',
+            plan: null,
+        });
+
+        render(<PlanMyDay />);
+
+        expect(await screen.findByText('Pay invoice')).toBeInTheDocument();
+        expect(fetchDailyPlan).toHaveBeenCalledWith('2099-01-15', {});
+        expect(fetchPlanCandidates).toHaveBeenCalledWith(
+            undefined,
+            {},
+            '2099-01-15'
+        );
+        expect(screen.queryByTestId('start-my-day')).not.toBeInTheDocument();
+        expect(screen.getByTestId('plan-other-day')).toHaveTextContent(
+            'Plan today'
+        );
+
+        fireEvent.click(screen.getByTestId('save-later-plan'));
+        await waitFor(() =>
+            expect(mockNavigate).toHaveBeenCalledWith('/today')
+        );
+        expect(startDailyPlan).not.toHaveBeenCalled();
     });
 });

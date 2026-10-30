@@ -3287,7 +3287,19 @@
     },
     "durationMinutes": "{{minutes}}m",
     "durationHours": "{{hours}}h",
-    "durationHoursMinutes": "{{hours}}h {{minutes}}m"
+    "durationHoursMinutes": "{{hours}}h {{minutes}}m",
+    "planTomorrow": "Plan tomorrow",
+    "planToday": "Plan today",
+    "savePlan": "Save plan",
+    "endDay": {
+      "button": "End day",
+      "title": "End the day",
+      "carryTitle": "Move to tomorrow",
+      "confirm": "End day",
+      "confirmCarry": "Move {{count}} and end day",
+      "endedTitle": "Day done",
+      "reopen": "Reopen day"
+    }
   },
   "relations": {
     "title": "Relations",

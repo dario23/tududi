@@ -245,7 +245,13 @@ async function draftDay(userId, { date, mode = 'fill' } = {}) {
 
     const [{ plan, day_hours: hours }, candidates, events] = await Promise.all([
         dailyPlanService.getPlan(fullUser, planDate),
-        dailyPlanService.getCandidates(fullUser),
+        // Candidates as of the planned day; an earlier day uses today's.
+        dailyPlanService.getCandidates(fullUser, {
+            date:
+                planDate > moment.tz(timezone).format('YYYY-MM-DD')
+                    ? planDate
+                    : null,
+        }),
         loadDayEvents(fullUser, planDate),
     ]);
     const planned = plan?.items || [];

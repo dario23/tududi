@@ -2945,7 +2945,19 @@
     },
     "durationMinutes": "{{minutes}} min",
     "durationHours": "{{hours}} h",
-    "durationHoursMinutes": "{{hours}} h {{minutes}} min"
+    "durationHoursMinutes": "{{hours}} h {{minutes}} min",
+    "planTomorrow": "Načrtuj jutri",
+    "planToday": "Načrtuj danes",
+    "savePlan": "Shrani načrt",
+    "endDay": {
+      "button": "Zaključi dan",
+      "title": "Zaključi dan",
+      "carryTitle": "Prestavi na jutri",
+      "confirm": "Zaključi dan",
+      "confirmCarry": "Prestavi {{count}} in zaključi dan",
+      "endedTitle": "Dan končan",
+      "reopen": "Znova odpri dan"
+    }
   },
   "capture": {
     "add": "Dodaj",

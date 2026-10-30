@@ -2953,7 +2953,19 @@
     },
     "durationMinutes": "{{minutes}} د",
     "durationHours": "{{hours}} س",
-    "durationHoursMinutes": "{{hours}} س {{minutes}} د"
+    "durationHoursMinutes": "{{hours}} س {{minutes}} د",
+    "planTomorrow": "خطّط للغد",
+    "planToday": "خطّط لليوم",
+    "savePlan": "حفظ الخطة",
+    "endDay": {
+      "button": "إنهاء اليوم",
+      "title": "إنهاء اليوم",
+      "carryTitle": "نقل إلى الغد",
+      "confirm": "إنهاء اليوم",
+      "confirmCarry": "نقل {{count}} وإنهاء اليوم",
+      "endedTitle": "انتهى اليوم",
+      "reopen": "إعادة فتح اليوم"
+    }
   },
   "capture": {
     "add": "إضافة",

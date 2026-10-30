@@ -2935,7 +2935,19 @@
     },
     "durationMinutes": "{{minutes}} mnt",
     "durationHours": "{{hours}} j",
-    "durationHoursMinutes": "{{hours}} j {{minutes}} mnt"
+    "durationHoursMinutes": "{{hours}} j {{minutes}} mnt",
+    "planTomorrow": "Rencanakan besok",
+    "planToday": "Rencanakan hari ini",
+    "savePlan": "Simpan rencana",
+    "endDay": {
+      "button": "Akhiri hari",
+      "title": "Akhiri hari ini",
+      "carryTitle": "Pindahkan ke besok",
+      "confirm": "Akhiri hari",
+      "confirmCarry": "Pindahkan {{count}} dan akhiri hari",
+      "endedTitle": "Hari selesai",
+      "reopen": "Buka kembali hari"
+    }
   },
   "capture": {
     "add": "Tambah",

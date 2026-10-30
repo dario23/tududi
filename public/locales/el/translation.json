@@ -2938,7 +2938,19 @@
     },
     "durationMinutes": "{{minutes}}λ",
     "durationHours": "{{hours}}ω",
-    "durationHoursMinutes": "{{hours}}ω {{minutes}}λ"
+    "durationHoursMinutes": "{{hours}}ω {{minutes}}λ",
+    "planTomorrow": "Σχεδίασε το αύριο",
+    "planToday": "Σχεδίασε το σήμερα",
+    "savePlan": "Αποθήκευση πλάνου",
+    "endDay": {
+      "button": "Κλείσιμο ημέρας",
+      "title": "Κλείσιμο της ημέρας",
+      "carryTitle": "Μεταφορά για αύριο",
+      "confirm": "Κλείσιμο ημέρας",
+      "confirmCarry": "Μεταφορά {{count}} και κλείσιμο ημέρας",
+      "endedTitle": "Η ημέρα ολοκληρώθηκε",
+      "reopen": "Άνοιγμα ημέρας ξανά"
+    }
   },
   "capture": {
     "add": "Προσθήκη",

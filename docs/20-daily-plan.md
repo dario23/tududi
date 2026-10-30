@@ -8,8 +8,10 @@ This document explains how the Today page, the "Plan my day" planner and calenda
 
 Today has two modes:
 
-1. **Planning** (`/today/plan`): a full-screen planner. Pick tasks, give each a rough length and place them in free time around your meetings.
+1. **Planning** (`/today/plan`): a full-screen planner. Pick tasks, give each a rough length and place them in free time around your meetings. `/today/plan?date=YYYY-MM-DD` plans a later day, such as tomorrow.
 2. **Doing** (`/today`): only what you committed to, in order, with the current block on top.
+
+In the evening, **End day** closes today and moves what is left to tomorrow, and **Plan tomorrow** opens the planner for the next day, so the morning starts with a finished plan.
 
 The classic Today page was removed; `/today_legacy` now redirects to `/today`. Its section lists (Overdue, Planned, Suggested, Completed) still feed the planner's candidates, see [Today Page Sections](02-today-page-sections.md). Its charts (overview counts, completions, area balance) moved to the **Overview** tab of Insights > Reports.
 
@@ -21,6 +23,7 @@ The classic Today page was removed; `/today_legacy` now redirects to `/today`. I
 | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | No plan, or a plan that was never started | A card with overdue, due today and inbox counts, free hours, today's meetings, **Plan your day** (or **Continue planning** for a draft) |
 | Plan started                              | The header shows done/total and time left, then the **Now** card, the agenda (tasks and meetings in time order) and a collapsed **Not planned** list                   |
+| Day ended                                 | A **Day done** card on top with done/total, **Plan tomorrow** and **Reopen day**; the agenda stays below                                                                |
 
 - **Now card:** the block running right now; otherwise the next planned block; otherwise the first unfinished task without a time. **Mark done** completes the task. **Push to later** removes the time slot and moves the task to the end of the list.
 - **Reordering:** drag an **Anytime** task to move it among the other Anytime tasks; the new order is saved as the plan's item order. Timed tasks stay in time order.
@@ -28,6 +31,7 @@ The classic Today page was removed; `/today_legacy` now redirects to `/today`. I
 - **Recurring tasks:** completing one moves the same task on to its next due date and reopens it. The plan still shows the day's occurrence as done (crossed out, with the next date) and counts it in `done/total`. This holds while a non-skipped completion falls on the plan's day and the task's due date is after that day, so undoing the completion makes it open again.
 - **Moving a due date:** changing a planned task's due date from the day (or earlier, or none) to a later day from the agenda takes it off the plan, with an undo toast. Changes made elsewhere leave the plan as it is.
 - **Replan** reopens the planner. Starting the day again keeps the first start time.
+- **End day** (next to Replan, any time after the day is started, no AI needed): lists the unfinished planned tasks, all ticked. Confirming appends the ticked ones to tomorrow's plan without a time (skipping any already there) and marks the day ended (`concluded_at`). **Reopen day** undoes the mark; tasks already moved stay on tomorrow's plan.
 - The sidebar shows `done/total` next to Today once the day is started.
 
 ---
@@ -36,6 +40,16 @@ The classic Today page was removed; `/today_legacy` now redirects to `/today`. I
 
 - **Left column:** a short list, "What could you do today?": five candidates at a time in a fixed order (see **Candidate order** below), each shown as its name and one grey line. The name opens the task. **Show 5 more** adds five and keeps going: once the loaded suggestions run out it asks the server for the next twenty, until every open task that qualifies has been shown. **Browse** opens the per-group filters and the inbox. Tasks already planned leave the list. Resting the pointer on a row for a moment, or focusing it (always on touch screens), opens its 15m / 30m / 1h / 2h chips and, for overdue tasks, **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task). The short delay keeps rows from opening and closing while the mouse passes over them.
 - Task names on the timeline and in the list view also open the task.
+
+### Planning a later day
+
+**Plan tomorrow** next to the planner's title (and on the **Day done** card) opens `/today/plan?date=` for the next day; on that page the same link reads **Plan today**. Any pending edit is saved before switching.
+
+- Tasks moved there with **End day** or the AI wrap-up are already on the plan.
+- Candidates are grouped as of that day (`GET /api/daily-plan/candidates?date=`): **overdue** means due before it (so today's unfinished due tasks), **due today** means due on it, whatever the suggestion filters say, and defer dates and the suggestion horizon count from the start of that day.
+- The whole day is free: new tasks take the first free slot from the start of the day hours, and there are no missed-block tips.
+- **Save plan** replaces **Start my day**: the plan stays a draft until that morning, when Today offers **Continue planning** and **Start my day** as usual.
+- The **Tomorrow** and **Next week** chips on overdue tasks count from the planned day.
 
 ### Candidate order
 
@@ -94,7 +108,7 @@ Profile → **Calendars**, or the **Calendars** button on the Calendar page, con
 
 | Table                    | Purpose                                                                                                                 |
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `daily_plans`            | One row per user per local date (`plan_date`), with `started_at` set by **Start my day**                                |
+| `daily_plans`            | One row per user per local date (`plan_date`), with `started_at` set by **Start my day** and `concluded_at` by **End day** |
 | `daily_plan_items`       | The tasks in a plan: `position`, `start_minute` (minutes after local midnight, null for untimed) and `duration_minutes` |
 | `daily_plans.ai_wrap_up` | The stored AI wrap-up for that day (JSON, optional)                                                                     |
 | `calendar_feeds`         | Name, color, encrypted URL, host, last fetch time and last error, and `show_on_calendar`                                |
@@ -108,7 +122,7 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | Method                | Path                                     | Notes                                                                                                                                                                                        |
 | --------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GET                   | `/api/daily-plan?date=`                  | `{ date, day_hours, plan }`, the plan or `null`. The date defaults to today in the user's timezone                                                                                           |
-| GET                   | `/api/daily-plan/candidates`             | `{ tagged_today, overdue, due_today, in_progress, suggested, suggested_total, inbox, inbox_count, ranked }`, each task in one group only; `ranked` lists task uids in the user's order. `?suggested_limit=N` (1 to 1000) sends up to N suggestions instead of the Planning setting; 400 otherwise |
+| GET                   | `/api/daily-plan/candidates`             | `{ tagged_today, overdue, due_today, in_progress, suggested, suggested_total, inbox, inbox_count, ranked }`, each task in one group only; `ranked` lists task uids in the user's order. `?suggested_limit=N` (1 to 1000) sends up to N suggestions instead of the Planning setting; 400 otherwise. `?date=` groups them as of a later day (see **Planning a later day**); a day before today gives 400 |
 | GET                   | `/api/daily-plan/ranking`                | `{ order, default_order }`, the ten bucket keys such as `overdue:project`                                                                                                                  |
 | PUT                   | `/api/daily-plan/ranking`                | Body `{ order }` with every bucket key once; 400 otherwise                                                                                                                                   |
 | GET                   | `/api/daily-plan/hours`                  | `{ start, end }` in minutes after local midnight                                                                                                                                             |
@@ -117,6 +131,8 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | PUT                   | `/api/daily-plan/hours`                  | Body `{ start, end }`, 30-minute steps, start before end, end at most 1440; 400 otherwise                                                                                                    |
 | PUT                   | `/api/daily-plan/:date`                  | Replaces all items: `{ items: [{ task_uid, start_minute, duration_minutes }] }`, in order. Rejects overlaps, slots past midnight, duplicates and tasks the user cannot see                   |
 | POST                  | `/api/daily-plan/:date/start`            | Marks the day started                                                                                                                                                                        |
+| POST                  | `/api/daily-plan/:date/conclude`         | **End day**: optional body `{ task_uids }` appended untimed to the next day's plan, then marks the day ended (`concluded_at`)                                                                 |
+| DELETE                | `/api/daily-plan/:date/conclude`         | **Reopen day**: clears `concluded_at`; carried tasks stay on the next day                                                                                                                    |
 | POST                  | `/api/daily-plan/:date/carry-over`       | Appends `{ task_uids }` to that day's plan without a time, skipping tasks already there                                                                                                      |
 | DELETE                | `/api/daily-plan/:date`                  | Clears the plan. `:date` may be `today`                                                                                                                                                      |
 | GET/POST/PATCH/DELETE | `/api/calendar-feeds[/:uid]`             | Manage feeds. POST fetches the feed once and refuses it if it cannot be read. PATCH also takes `show_on_calendar`                                                                            |
@@ -146,7 +162,7 @@ Everything in this section appears only while the **AI assistant** is switched o
 - **Day wrap-up** (Today):
     - Offered once the last timed block has ended, or when everything is done.
     - Returns a short summary, wins, a pattern and the unfinished tasks worth carrying over.
-    - **Add to tomorrow** appends the selected ones, untimed, to the next day's plan (`POST /api/daily-plan/:date/carry-over`).
+    - **Add to tomorrow** appends the selected ones, untimed, to the next day's plan (`POST /api/daily-plan/:date/carry-over`). **End day** does the same without the AI.
     - Stored in `daily_plans.ai_wrap_up`, so it is not regenerated on every visit.
 
 Each draft, estimate batch or wrap-up counts as one AI request, and one AI credit in hosted mode. See [AI Assistant](13-ai-assistant.md).
@@ -154,5 +170,6 @@ Each draft, estimate batch or wrap-up counts as one AI request, and one AI credi
 ## Known limitations
 
 - Two open planners for the same day overwrite each other; the last save wins.
-- Unfinished tasks are not carried over to the next day's plan.
+- Unfinished tasks only move to the next day's plan through **End day** or the AI wrap-up; a day that was never ended carries nothing over.
+- Only today and later days can be planned; past plans are kept but not editable from the planner.
 - There are no MCP tools for the plan yet.

@@ -56,6 +56,27 @@ export const intlLocale = (language: string | undefined): string => {
     return { jp: 'ja', ua: 'uk' }[code] || language || 'en';
 };
 
+// A YYYY-MM-DD date moved by whole days.
+export const addDays = (date: string, days: number): string => {
+    const d = new Date(`${date}T12:00:00`);
+    d.setDate(d.getDate() + days);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+// Today's YYYY-MM-DD date in the given IANA zone.
+export const todayIn = (timezone?: string): string => {
+    try {
+        return new Intl.DateTimeFormat('en-CA', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            timeZone: timezone,
+        }).format(new Date());
+    } catch {
+        return new Date().toISOString().slice(0, 10);
+    }
+};
+
 export const snapToSlot = (minute: number): number =>
     Math.round(minute / SLOT_MINUTES) * SLOT_MINUTES;
 

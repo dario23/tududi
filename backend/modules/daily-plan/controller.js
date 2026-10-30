@@ -27,6 +27,7 @@ const dailyPlanController = {
             const user = requireUser(req);
             res.json(
                 await dailyPlanService.getCandidates(user, {
+                    date: req.query.date,
                     suggestedLimit: dailyPlanService.parseSuggestedLimit(
                         req.query.suggested_limit
                     ),
@@ -113,6 +114,30 @@ const dailyPlanController = {
         try {
             const user = requireUser(req);
             res.json(await dailyPlanService.startPlan(user, req.params.date));
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async conclude(req, res, next) {
+        try {
+            const user = requireUser(req);
+            res.json(
+                await dailyPlanService.concludePlan(
+                    user,
+                    req.params.date,
+                    req.body?.task_uids
+                )
+            );
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async reopen(req, res, next) {
+        try {
+            const user = requireUser(req);
+            res.json(await dailyPlanService.reopenPlan(user, req.params.date));
         } catch (err) {
             next(err);
         }

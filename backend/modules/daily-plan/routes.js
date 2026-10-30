@@ -37,6 +37,8 @@ router.post(
     dailyPlanController.aiWrapUp
 );
 router.post('/daily-plan/:date/start', dailyPlanController.start);
+router.post('/daily-plan/:date/conclude', dailyPlanController.conclude);
+router.delete('/daily-plan/:date/conclude', dailyPlanController.reopen);
 router.delete('/daily-plan/:date', dailyPlanController.clear);
 
 module.exports = router;

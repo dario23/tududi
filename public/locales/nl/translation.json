@@ -2937,7 +2937,19 @@
     },
     "durationMinutes": "{{minutes}} min",
     "durationHours": "{{hours}} u",
-    "durationHoursMinutes": "{{hours}} u {{minutes}} min"
+    "durationHoursMinutes": "{{hours}} u {{minutes}} min",
+    "planTomorrow": "Morgen plannen",
+    "planToday": "Vandaag plannen",
+    "savePlan": "Plan opslaan",
+    "endDay": {
+      "button": "Dag afsluiten",
+      "title": "De dag afsluiten",
+      "carryTitle": "Naar morgen verplaatsen",
+      "confirm": "Dag afsluiten",
+      "confirmCarry": "{{count}} verplaatsen en dag afsluiten",
+      "endedTitle": "Dag klaar",
+      "reopen": "Dag heropenen"
+    }
   },
   "capture": {
     "add": "Toevoegen",

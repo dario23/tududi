@@ -2943,7 +2943,19 @@
     },
     "durationMinutes": "{{minutes}} min",
     "durationHours": "{{hours}} h",
-    "durationHoursMinutes": "{{hours}} h {{minutes}} min"
+    "durationHoursMinutes": "{{hours}} h {{minutes}} min",
+    "planTomorrow": "Planifică mâine",
+    "planToday": "Planifică azi",
+    "savePlan": "Salvează planul",
+    "endDay": {
+      "button": "Încheie ziua",
+      "title": "Încheie ziua",
+      "carryTitle": "Mută pe mâine",
+      "confirm": "Încheie ziua",
+      "confirmCarry": "Mută {{count}} și încheie ziua",
+      "endedTitle": "Zi încheiată",
+      "reopen": "Redeschide ziua"
+    }
   },
   "capture": {
     "add": "Adaugă",

@@ -304,6 +304,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
 29. **[Daily Plan](docs/20-daily-plan.md)**
     - Today in two modes: planning (`/today/plan`) and doing (`/today`); `/today_legacy` redirects to `/today`
     - Timeline and list planning, task estimates, the Now card
+    - End day (carry unfinished tasks to tomorrow) and planning a later day (`/today/plan?date=`)
     - Read-only iCal calendar feeds (Google secret address), encrypted and SSRF-guarded
     - Daily plan API and schema
 

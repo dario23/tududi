@@ -2935,7 +2935,19 @@
     },
     "durationMinutes": "{{minutes}} phút",
     "durationHours": "{{hours}} giờ",
-    "durationHoursMinutes": "{{hours}} giờ {{minutes}} phút"
+    "durationHoursMinutes": "{{hours}} giờ {{minutes}} phút",
+    "planTomorrow": "Lên kế hoạch ngày mai",
+    "planToday": "Lên kế hoạch hôm nay",
+    "savePlan": "Lưu kế hoạch",
+    "endDay": {
+      "button": "Kết thúc ngày",
+      "title": "Kết thúc ngày",
+      "carryTitle": "Chuyển sang ngày mai",
+      "confirm": "Kết thúc ngày",
+      "confirmCarry": "Chuyển {{count}} và kết thúc ngày",
+      "endedTitle": "Đã xong ngày",
+      "reopen": "Mở lại ngày"
+    }
   },
   "capture": {
     "add": "Thêm",

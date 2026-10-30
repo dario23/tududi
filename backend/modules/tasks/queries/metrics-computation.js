@@ -116,8 +116,9 @@ async function computeSuggestedTasks(
     // Plan my day passes the user's planning settings: filter first, sort
     // with the planner's rules, and leave the cap to the planner, which
     // applies it after its final order. The classic Today page passes none
-    // and keeps the behaviour below.
-    const now = Date.now();
+    // and keeps the behaviour below. Planning a later day sets `asOf` to the
+    // start of that day, so defer dates and the horizon count from there.
+    const now = planning?.asOf ?? Date.now();
     const keep = planning
         ? (tasks) => tasks.filter((task) => isSuggestible(task, planning, now))
         : (tasks) => tasks;
