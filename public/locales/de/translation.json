@@ -2958,6 +2958,15 @@
       "confirmCarry": "{{count}} verschieben und Tag beenden",
       "endedTitle": "Tag erledigt",
       "reopen": "Tag wieder öffnen"
+    },
+    "tomorrowLink": "Morgen",
+    "backToToday": "Zurück zu heute",
+    "openPlanner": "Planer öffnen",
+    "laterDay": {
+      "title": "Geplant für",
+      "empty": "Für diesen Tag ist noch nichts geplant. Füge unten Aufgaben hinzu oder öffne den Planer.",
+      "add": "Zum Plan hinzufügen",
+      "due": "An dem Tag fällig"
     }
   },
   "capture": {

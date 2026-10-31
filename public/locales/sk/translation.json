@@ -2963,6 +2963,15 @@
             "confirmCarry": "Presunúť {{count}} a ukončiť deň",
             "endedTitle": "Deň hotový",
             "reopen": "Znovu otvoriť deň"
+        },
+        "tomorrowLink": "Zajtra",
+        "backToToday": "Späť na dnešok",
+        "openPlanner": "Otvoriť plánovač",
+        "laterDay": {
+            "title": "Naplánované na",
+            "empty": "Na tento deň zatiaľ nie je nič naplánované. Pridajte úlohy nižšie alebo otvorte plánovač.",
+            "add": "Pridať do plánu",
+            "due": "Termín v ten deň"
         }
     },
     "relations": {

@@ -14,6 +14,10 @@ interface NotPlannedDrawerProps {
     projects: Project[];
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskDelete: (taskUid: string) => Promise<void>;
+    // A later day: its own button and due-group labels, and open at first.
+    addLabel?: string;
+    dueLabel?: string;
+    defaultOpen?: boolean;
 }
 
 const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
@@ -23,9 +27,13 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
     projects,
     onTaskUpdate,
     onTaskDelete,
+    addLabel,
+    dueLabel,
+    defaultOpen = false,
 }) => {
     const { t } = useTranslation();
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(defaultOpen);
+    const addText = addLabel ?? t('dailyPlan.addToToday', 'Add to today');
 
     if (!candidates) return null;
 
@@ -44,7 +52,7 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
         },
         {
             key: 'due_today',
-            label: t('dailyPlan.dueToday', 'Due today'),
+            label: dueLabel ?? t('dailyPlan.dueToday', 'Due today'),
             tasks: notPlanned(candidates.due_today),
         },
         {
@@ -132,22 +140,13 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
                                         <button
                                             type="button"
                                             onClick={() => onAdd(task)}
-                                            aria-label={t(
-                                                'dailyPlan.addToToday',
-                                                'Add to today'
-                                            )}
-                                            title={t(
-                                                'dailyPlan.addToToday',
-                                                'Add to today'
-                                            )}
+                                            aria-label={addText}
+                                            title={addText}
                                             className="mt-1.5 inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center gap-1 rounded-md px-2 text-xs font-medium text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
                                         >
                                             <PlusIcon className="h-4 w-4" />
                                             <span className="hidden sm:inline">
-                                                {t(
-                                                    'dailyPlan.addToToday',
-                                                    'Add to today'
-                                                )}
+                                                {addText}
                                             </span>
                                         </button>
                                     </div>

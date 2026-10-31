@@ -2952,6 +2952,15 @@
       "confirmCarry": "Sposta {{count}} e chiudi",
       "endedTitle": "Giornata conclusa",
       "reopen": "Riapri la giornata"
+    },
+    "tomorrowLink": "Domani",
+    "backToToday": "Torna a oggi",
+    "openPlanner": "Apri il pianificatore",
+    "laterDay": {
+      "title": "Pianificato per",
+      "empty": "Ancora niente di pianificato per questo giorno. Aggiungi attività qui sotto o apri il pianificatore.",
+      "add": "Aggiungi al piano",
+      "due": "In scadenza quel giorno"
     }
   },
   "capture": {

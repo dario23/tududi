@@ -2947,6 +2947,15 @@
       "confirmCarry": "Chuyển {{count}} và kết thúc ngày",
       "endedTitle": "Đã xong ngày",
       "reopen": "Mở lại ngày"
+    },
+    "tomorrowLink": "Ngày mai",
+    "backToToday": "Quay lại hôm nay",
+    "openPlanner": "Mở trình lập kế hoạch",
+    "laterDay": {
+      "title": "Kế hoạch cho",
+      "empty": "Chưa có gì được lên kế hoạch cho ngày này. Thêm công việc bên dưới hoặc mở trình lập kế hoạch.",
+      "add": "Thêm vào kế hoạch",
+      "due": "Đến hạn ngày đó"
     }
   },
   "capture": {

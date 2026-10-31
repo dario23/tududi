@@ -2954,6 +2954,15 @@
       "confirmCarry": "Flytt {{count}} og avslutt dagen",
       "endedTitle": "Dagen er ferdig",
       "reopen": "Åpne dagen igjen"
+    },
+    "tomorrowLink": "I morgen",
+    "backToToday": "Tilbake til i dag",
+    "openPlanner": "Åpne planleggeren",
+    "laterDay": {
+      "title": "Planlagt for",
+      "empty": "Ingenting planlagt for denne dagen ennå. Legg til oppgaver nedenfor eller åpne planleggeren.",
+      "add": "Legg til i plan",
+      "due": "Forfaller den dagen"
     }
   },
   "capture": {

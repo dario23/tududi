@@ -2947,6 +2947,15 @@
       "confirmCarry": "{{count}}개 옮기고 하루 마치기",
       "endedTitle": "하루 완료",
       "reopen": "하루 다시 열기"
+    },
+    "tomorrowLink": "내일",
+    "backToToday": "오늘로 돌아가기",
+    "openPlanner": "플래너 열기",
+    "laterDay": {
+      "title": "계획한 날",
+      "empty": "이 날의 계획이 아직 없습니다. 아래에서 작업을 추가하거나 플래너를 여세요.",
+      "add": "계획에 추가",
+      "due": "그날 마감"
     }
   },
   "capture": {

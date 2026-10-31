@@ -43,12 +43,17 @@ The classic Today page was removed; `/today_legacy` now redirects to `/today`. I
 
 ### Planning a later day
 
-**Plan tomorrow** next to the planner's title (and on the **Day done** card) opens `/today/plan?date=` for the next day; on that page the same link reads **Plan today**. Any pending edit is saved before switching.
+Tomorrow can be filled in at any time; today does not have to be ended first. There are two ways in:
+
+- **`/today?date=`** (the **Tomorrow** link in Today's header): that day's plan as an agenda, with the **Not planned** list open below it, grouped as of that day. **Add to plan** appends a task without a time, the same as **Add to today**. There is no Now card, End day, tips or wrap-up, and the sidebar count stays on today. **Open planner** opens the planner for the day; **Back to today** returns.
+- **`/today/plan?date=`**: the planner for that day. **Plan tomorrow** next to the planner's title (and on the **Day done** card) opens it; on that page the same link reads **Plan today**. Any pending edit is saved before switching. **Save plan** goes back to `/today?date=`.
+
+A `date` that is missing, malformed, today or earlier shows today on both pages.
 
 - Tasks moved there with **End day** or the AI wrap-up are already on the plan.
 - Candidates are grouped as of that day (`GET /api/daily-plan/candidates?date=`): **overdue** means due before it (so today's unfinished due tasks), **due today** means due on it, whatever the suggestion filters say, and defer dates and the suggestion horizon count from the start of that day.
 - The whole day is free: new tasks take the first free slot from the start of the day hours, and there are no missed-block tips.
-- **Save plan** replaces **Start my day**: the plan stays a draft until that morning, when Today offers **Continue planning** and **Start my day** as usual.
+- **Save plan** replaces **Start my day** in the planner: the plan stays a draft until that morning, when Today offers **Continue planning** and **Start my day** as usual.
 - The **Tomorrow** and **Next week** chips on overdue tasks count from the planned day.
 
 ### Candidate order

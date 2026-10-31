@@ -2949,6 +2949,15 @@
       "confirmCarry": "{{count}} verplaatsen en dag afsluiten",
       "endedTitle": "Dag klaar",
       "reopen": "Dag heropenen"
+    },
+    "tomorrowLink": "Morgen",
+    "backToToday": "Terug naar vandaag",
+    "openPlanner": "Planner openen",
+    "laterDay": {
+      "title": "Gepland voor",
+      "empty": "Nog niets gepland voor deze dag. Voeg hieronder taken toe of open de planner.",
+      "add": "Aan plan toevoegen",
+      "due": "Die dag te doen"
     }
   },
   "capture": {

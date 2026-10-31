@@ -2947,6 +2947,15 @@
       "confirmCarry": "Pindahkan {{count}} dan akhiri hari",
       "endedTitle": "Hari selesai",
       "reopen": "Buka kembali hari"
+    },
+    "tomorrowLink": "Besok",
+    "backToToday": "Kembali ke hari ini",
+    "openPlanner": "Buka perencana",
+    "laterDay": {
+      "title": "Direncanakan untuk",
+      "empty": "Belum ada yang direncanakan untuk hari ini. Tambahkan tugas di bawah atau buka perencana.",
+      "add": "Tambahkan ke rencana",
+      "due": "Jatuh tempo hari itu"
     }
   },
   "capture": {

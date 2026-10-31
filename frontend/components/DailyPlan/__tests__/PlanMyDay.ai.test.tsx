@@ -257,7 +257,7 @@ describe('PlanMyDay AI help', () => {
 
         fireEvent.click(screen.getByTestId('save-later-plan'));
         await waitFor(() =>
-            expect(mockNavigate).toHaveBeenCalledWith('/today')
+            expect(mockNavigate).toHaveBeenCalledWith('/today?date=2099-01-15')
         );
         expect(startDailyPlan).not.toHaveBeenCalled();
     });

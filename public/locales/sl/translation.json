@@ -2957,6 +2957,15 @@
       "confirmCarry": "Prestavi {{count}} in zaključi dan",
       "endedTitle": "Dan končan",
       "reopen": "Znova odpri dan"
+    },
+    "tomorrowLink": "Jutri",
+    "backToToday": "Nazaj na danes",
+    "openPlanner": "Odpri načrtovalnik",
+    "laterDay": {
+      "title": "Načrtovano za",
+      "empty": "Za ta dan še ni nič načrtovano. Spodaj dodajte opravila ali odprite načrtovalnik.",
+      "add": "Dodaj v načrt",
+      "due": "Rok na ta dan"
     }
   },
   "capture": {

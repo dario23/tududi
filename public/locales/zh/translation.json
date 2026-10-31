@@ -2947,6 +2947,15 @@
       "confirmCarry": "移动 {{count}} 项并结束今天",
       "endedTitle": "今天已完成",
       "reopen": "重新打开今天"
+    },
+    "tomorrowLink": "明天",
+    "backToToday": "返回今天",
+    "openPlanner": "打开计划器",
+    "laterDay": {
+      "title": "计划日期",
+      "empty": "这一天还没有计划。在下方添加任务，或打开计划器。",
+      "add": "加入计划",
+      "due": "当天到期"
     }
   },
   "capture": {

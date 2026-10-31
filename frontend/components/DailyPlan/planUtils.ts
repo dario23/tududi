@@ -77,6 +77,16 @@ export const todayIn = (timezone?: string): string => {
     }
 };
 
+// A ?date= value naming a day after today, or undefined for anything else
+// (none, malformed, today or earlier), which means today.
+export const laterDayParam = (
+    value: string | null,
+    timezone?: string
+): string | undefined =>
+    value && /^\d{4}-\d{2}-\d{2}$/.test(value) && value > todayIn(timezone)
+        ? value
+        : undefined;
+
 export const snapToSlot = (minute: number): number =>
     Math.round(minute / SLOT_MINUTES) * SLOT_MINUTES;
 

@@ -2949,6 +2949,15 @@
       "confirmCarry": "Flytta {{count}} och avsluta dagen",
       "endedTitle": "Dagen är klar",
       "reopen": "Öppna dagen igen"
+    },
+    "tomorrowLink": "I morgon",
+    "backToToday": "Tillbaka till i dag",
+    "openPlanner": "Öppna planeraren",
+    "laterDay": {
+      "title": "Planerat för",
+      "empty": "Inget planerat för den här dagen än. Lägg till uppgifter nedan eller öppna planeraren.",
+      "add": "Lägg till i plan",
+      "due": "Förfaller den dagen"
     }
   },
   "capture": {

@@ -2952,6 +2952,15 @@
       "confirmCarry": "Reporter {{count}} et terminer",
       "endedTitle": "Journée terminée",
       "reopen": "Rouvrir la journée"
+    },
+    "tomorrowLink": "Demain",
+    "backToToday": "Retour à aujourd'hui",
+    "openPlanner": "Ouvrir le planificateur",
+    "laterDay": {
+      "title": "Prévu pour",
+      "empty": "Rien n'est encore prévu ce jour-là. Ajoutez des tâches ci-dessous ou ouvrez le planificateur.",
+      "add": "Ajouter au plan",
+      "due": "Échéance ce jour-là"
     }
   },
   "capture": {

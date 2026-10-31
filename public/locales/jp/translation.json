@@ -2947,6 +2947,15 @@
       "confirmCarry": "{{count}}件を移して一日を終える",
       "endedTitle": "今日は完了",
       "reopen": "一日を再開"
+    },
+    "tomorrowLink": "明日",
+    "backToToday": "今日に戻る",
+    "openPlanner": "プランナーを開く",
+    "laterDay": {
+      "title": "予定日",
+      "empty": "この日の予定はまだありません。下からタスクを追加するか、プランナーを開いてください。",
+      "add": "プランに追加",
+      "due": "その日が期限"
     }
   },
   "capture": {

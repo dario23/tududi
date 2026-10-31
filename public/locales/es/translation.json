@@ -2939,6 +2939,15 @@
       "confirmCarry": "Pasar {{count}} y terminar el día",
       "endedTitle": "Día terminado",
       "reopen": "Reabrir el día"
+    },
+    "tomorrowLink": "Mañana",
+    "backToToday": "Volver a hoy",
+    "openPlanner": "Abrir el planificador",
+    "laterDay": {
+      "title": "Planificado para",
+      "empty": "Aún no hay nada planificado para este día. Añade tareas abajo o abre el planificador.",
+      "add": "Añadir al plan",
+      "due": "Vence ese día"
     }
   },
   "capture": {

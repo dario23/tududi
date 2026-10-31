@@ -37,6 +37,9 @@ interface TodayPlannedProps {
         value: AiWrapUp | null;
         onGenerated: (wrapUp: AiWrapUp) => void;
     };
+    // A later day being filled in: no Now card, and the Not planned list
+    // adds to that day and starts open.
+    laterDay?: boolean;
 }
 
 const TodayPlanned: React.FC<TodayPlannedProps> = ({
@@ -59,6 +62,7 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
     onMoveMissed,
     onPlaceTip,
     wrapUp,
+    laterDay = false,
 }) => {
     const { t } = useTranslation();
     const allDay = events.filter((e) => e.all_day);
@@ -80,14 +84,28 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
                 />
             )}
 
-            <NowCard
-                items={items}
-                events={events}
-                now={now}
-                onDone={onToggleDone}
-                onPushLater={onPushLater}
-                busyUid={busyUid}
-            />
+            {laterDay ? (
+                items.length === 0 && (
+                    <p
+                        className="text-gray-600 dark:text-gray-400"
+                        data-testid="later-day-empty"
+                    >
+                        {t(
+                            'dailyPlan.laterDay.empty',
+                            'Nothing planned for this day yet. Add tasks below or open the planner.'
+                        )}
+                    </p>
+                )
+            ) : (
+                <NowCard
+                    items={items}
+                    events={events}
+                    now={now}
+                    onDone={onToggleDone}
+                    onPushLater={onPushLater}
+                    busyUid={busyUid}
+                />
+            )}
 
             {tips.length > 0 && (
                 <PlanTips
@@ -116,6 +134,13 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
                 projects={projects}
                 onTaskUpdate={onCandidateUpdate}
                 onTaskDelete={onCandidateDelete}
+                {...(laterDay
+                    ? {
+                          addLabel: t('dailyPlan.laterDay.add', 'Add to plan'),
+                          dueLabel: t('dailyPlan.laterDay.due', 'Due that day'),
+                          defaultOpen: true,
+                      }
+                    : {})}
             />
         </div>
     );

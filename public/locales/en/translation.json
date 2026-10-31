@@ -3299,6 +3299,15 @@
       "confirmCarry": "Move {{count}} and end day",
       "endedTitle": "Day done",
       "reopen": "Reopen day"
+    },
+    "tomorrowLink": "Tomorrow",
+    "backToToday": "Back to today",
+    "openPlanner": "Open planner",
+    "laterDay": {
+      "title": "Planned for",
+      "empty": "Nothing planned for this day yet. Add tasks below or open the planner.",
+      "add": "Add to plan",
+      "due": "Due that day"
     }
   },
   "relations": {

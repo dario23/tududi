@@ -5,7 +5,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowPathIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
@@ -47,6 +47,8 @@ import {
     isItemDone,
     minuteOfDay,
     intlLocale,
+    addDays,
+    laterDayParam,
 } from './planUtils';
 import { useAiAllowed } from '../../hooks/useTrialStatus';
 
@@ -66,7 +68,12 @@ const movedPastDay = (
     return !later(before) && later(after);
 };
 
-const TodayPage: React.FC = () => {
+interface TodayDayProps {
+    // A later day being filled in, such as tomorrow; undefined is today.
+    planFor?: string;
+}
+
+const TodayDay: React.FC<TodayDayProps> = ({ planFor }) => {
     const aiAllowed = useAiAllowed();
     const { t, i18n } = useTranslation();
     const focus = useFocus();
@@ -89,13 +96,16 @@ const TodayPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [busyUid, setBusyUid] = useState<string | null>(null);
     const [ending, setEnding] = useState(false);
-    const [now, setNow] = useState(() =>
+    const [clock, setClock] = useState(() =>
         minuteOfDay(new Date(), getUserTimezone())
     );
+    // A later day has not begun: nothing on it is missed or running yet.
+    const laterDay = !!planFor;
+    const now = laterDay ? 0 : clock;
 
     useEffect(() => {
         const timer = setInterval(
-            () => setNow(minuteOfDay(new Date(), getUserTimezone())),
+            () => setClock(minuteOfDay(new Date(), getUserTimezone())),
             60 * 1000
         );
         return () => clearInterval(timer);
@@ -106,13 +116,14 @@ const TodayPage: React.FC = () => {
         (async () => {
             try {
                 const scope = focusScopeParams(focus);
-                const plan = await fetchDailyPlan(undefined, scope);
+                const plan = await fetchDailyPlan(planFor, scope);
                 if (cancelled) return;
                 setPlanResponse(plan);
 
                 const candidateList = await fetchPlanCandidates(
                     undefined,
-                    scope
+                    scope,
+                    planFor
                 ).catch(() => null);
                 if (cancelled) return;
                 setCandidates(candidateList);
@@ -129,7 +140,7 @@ const TodayPage: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [t, focusId]);
+    }, [t, focusId, planFor]);
 
     // Calendar feeds belong to the Calendar feature; with it off Today shows
     // no events and no prompt to connect a calendar.
@@ -168,6 +179,8 @@ const TodayPage: React.FC = () => {
     itemsRef.current = items;
 
     useEffect(() => {
+        // The sidebar counts today only.
+        if (laterDay) return;
         setProgress(
             started
                 ? {
@@ -176,7 +189,7 @@ const TodayPage: React.FC = () => {
                   }
                 : null
         );
-    }, [started, items, setProgress]);
+    }, [started, items, setProgress, laterDay]);
 
     const replaceItems = useCallback(
         async (next: DailyPlanItem[]) => {
@@ -384,7 +397,7 @@ const TodayPage: React.FC = () => {
         useStore((state) => state.userSettingsStore.aiAssistantEnabled) &&
         aiAllowed;
     const tips =
-        aiEnabled && started
+        aiEnabled && started && !laterDay
             ? buildTips({
                   items,
                   events,
@@ -436,7 +449,9 @@ const TodayPage: React.FC = () => {
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                     <div className="flex flex-1 items-baseline gap-2">
                         <h2 className="text-2xl font-light">
-                            {t('tasks.today', 'Today')},
+                            {laterDay
+                                ? t('dailyPlan.laterDay.title', 'Planned for')
+                                : `${t('tasks.today', 'Today')},`}
                         </h2>
                         <span className="text-lg font-light text-gray-500 dark:text-gray-400">
                             {dateLabel}
@@ -452,7 +467,34 @@ const TodayPage: React.FC = () => {
                             {t('dailyPlan.beta', 'Beta')}
                         </span>
                     </div>
-                    {started && (
+                    {planResponse && laterDay && (
+                        <div className="flex items-center gap-3">
+                            <Link
+                                to="/today"
+                                className="text-sm text-blue-600 underline-offset-2 hover:underline dark:text-blue-400"
+                                data-testid="later-day-back"
+                            >
+                                {t('dailyPlan.backToToday', 'Back to today')}
+                            </Link>
+                            <Link
+                                to={`/today/plan?date=${planResponse.date}`}
+                                className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
+                                data-testid="later-day-plan"
+                            >
+                                {t('dailyPlan.openPlanner', 'Open planner')}
+                            </Link>
+                        </div>
+                    )}
+                    {planResponse && !laterDay && (
+                        <Link
+                            to={`/today?date=${addDays(planResponse.date, 1)}`}
+                            className="text-sm text-blue-600 underline-offset-2 hover:underline dark:text-blue-400"
+                            data-testid="today-tomorrow-link"
+                        >
+                            {t('dailyPlan.tomorrowLink', 'Tomorrow')}
+                        </Link>
+                    )}
+                    {started && !laterDay && (
                         <div className="flex items-center gap-3">
                             <span className="text-sm text-gray-600 dark:text-gray-400">
                                 {t(
@@ -495,7 +537,7 @@ const TodayPage: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    {started && (
+                    {started && !laterDay && (
                         <div
                             className="h-1 rounded-full bg-gray-200 dark:bg-gray-700"
                             role="progressbar"
@@ -526,7 +568,7 @@ const TodayPage: React.FC = () => {
                     </p>
                 )}
 
-                {planResponse && !started && (
+                {planResponse && !started && !laterDay && (
                     <TodayUnplanned
                         candidates={candidates}
                         events={events}
@@ -538,22 +580,26 @@ const TodayPage: React.FC = () => {
                     />
                 )}
 
-                {planResponse && started && (concluded || ending) && (
-                    <EndDayCard
-                        key={concluded ? 'ended' : 'ending'}
-                        date={planResponse.date}
-                        items={items}
-                        concluded={concluded}
-                        onSaved={(saved) => {
-                            setPlanResponse(saved);
-                            setEnding(false);
-                        }}
-                        onCancel={() => setEnding(false)}
-                    />
-                )}
+                {planResponse &&
+                    started &&
+                    !laterDay &&
+                    (concluded || ending) && (
+                        <EndDayCard
+                            key={concluded ? 'ended' : 'ending'}
+                            date={planResponse.date}
+                            items={items}
+                            concluded={concluded}
+                            onSaved={(saved) => {
+                                setPlanResponse(saved);
+                                setEnding(false);
+                            }}
+                            onCancel={() => setEnding(false)}
+                        />
+                    )}
 
-                {planResponse && started && (
+                {planResponse && (started || laterDay) && (
                     <TodayPlanned
+                        laterDay={laterDay}
                         items={items}
                         events={events}
                         candidates={candidates}
@@ -590,7 +636,9 @@ const TodayPage: React.FC = () => {
                         onPlaceTip={(tip) => handleAdd(tip.task, tip.start)}
                         wrapUp={{
                             show:
-                                aiEnabled && (dayIsOver || !!plan?.ai_wrap_up),
+                                !laterDay &&
+                                aiEnabled &&
+                                (dayIsOver || !!plan?.ai_wrap_up),
                             date: planResponse.date,
                             value: plan?.ai_wrap_up ?? null,
                             onGenerated: setWrapUp,
@@ -600,6 +648,13 @@ const TodayPage: React.FC = () => {
             </div>
         </div>
     );
+};
+
+// ?date= shows a later day, such as tomorrow, to fill in ahead.
+const TodayPage: React.FC = () => {
+    const [searchParams] = useSearchParams();
+    const planFor = laterDayParam(searchParams.get('date'), getUserTimezone());
+    return <TodayDay key={planFor ?? 'today'} planFor={planFor} />;
 };
 
 export default TodayPage;

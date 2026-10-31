@@ -74,6 +74,7 @@ import {
     overlapsItems,
     plannedMinutes,
     intlLocale,
+    laterDayParam,
     todayIn,
 } from './planUtils';
 
@@ -791,7 +792,7 @@ const PlanDay: React.FC<PlanDayProps> = ({ planFor }) => {
         }
         try {
             if (start) await startDailyPlan(date);
-            navigate('/today');
+            navigate(laterDay ? `/today?date=${date}` : '/today');
         } catch (err) {
             setLeaving(false);
             showErrorToast(
@@ -1369,11 +1370,7 @@ const PlanDay: React.FC<PlanDayProps> = ({ planFor }) => {
 // Each day gets its own planner, so nothing carries over between them.
 const PlanMyDay: React.FC = () => {
     const [searchParams] = useSearchParams();
-    const requested = searchParams.get('date');
-    const planFor =
-        requested && /^\d{4}-\d{2}-\d{2}$/.test(requested)
-            ? requested
-            : undefined;
+    const planFor = laterDayParam(searchParams.get('date'), getUserTimezone());
     return <PlanDay key={planFor ?? 'today'} planFor={planFor} />;
 };
 

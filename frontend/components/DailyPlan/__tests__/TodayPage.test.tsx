@@ -34,7 +34,9 @@ jest.mock('react-i18next', () => {
     return { useTranslation: () => ({ t, i18n }) };
 });
 
+let mockSearch = '';
 jest.mock('react-router-dom', () => ({
+    useSearchParams: () => [new URLSearchParams(mockSearch)],
     Link: ({ children, to, ...rest }: any) => (
         <a href={to} {...rest}>
             {children}
@@ -122,6 +124,7 @@ describe('TodayPage', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockCalendarEnabled = true;
+        mockSearch = '';
         (fetchPlanCandidates as jest.Mock).mockResolvedValue(candidates);
         (fetchCalendarFeeds as jest.Mock).mockResolvedValue([]);
         (fetchCalendarEvents as jest.Mock).mockResolvedValue({
@@ -599,6 +602,74 @@ describe('TodayPage', () => {
         await waitFor(() =>
             expect(concludeDailyPlan).toHaveBeenCalledWith('2026-09-24', [])
         );
+    });
+
+    it('links to tomorrow from today', async () => {
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: null,
+        });
+
+        render(<TodayPage />);
+
+        expect(
+            await screen.findByTestId('today-tomorrow-link')
+        ).toHaveAttribute('href', '/today?date=2026-09-25');
+    });
+
+    it('fills in a later day from the Not planned list', async () => {
+        mockSearch = 'date=2099-01-15';
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2099-01-15',
+            plan: null,
+        });
+        (saveDailyPlanItems as jest.Mock).mockResolvedValue({
+            date: '2099-01-15',
+            plan: null,
+        });
+
+        render(<TodayPage />);
+
+        expect(
+            await screen.findByTestId('later-day-empty')
+        ).toBeInTheDocument();
+        expect(fetchDailyPlan).toHaveBeenCalledWith('2099-01-15', {});
+        await waitFor(() =>
+            expect(fetchPlanCandidates).toHaveBeenCalledWith(
+                undefined,
+                {},
+                '2099-01-15'
+            )
+        );
+        expect(screen.queryByTestId('now-card')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('end-day-button')).not.toBeInTheDocument();
+        expect(screen.getByTestId('later-day-plan')).toHaveAttribute(
+            'href',
+            '/today/plan?date=2099-01-15'
+        );
+
+        // The list starts open on a later day.
+        fireEvent.click(await screen.findByTitle('Add to plan'));
+        await waitFor(() =>
+            expect(saveDailyPlanItems).toHaveBeenCalledWith('2099-01-15', [
+                { task_uid: 'o1', start_minute: null, duration_minutes: 30 },
+            ])
+        );
+    });
+
+    it('shows today for a date that is not after today', async () => {
+        mockSearch = 'date=2000-01-01';
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: null,
+        });
+
+        render(<TodayPage />);
+
+        expect(
+            await screen.findByText("You haven't planned today yet")
+        ).toBeInTheDocument();
+        expect(fetchDailyPlan).toHaveBeenCalledWith(undefined, {});
     });
 });
 

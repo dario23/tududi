@@ -2955,6 +2955,15 @@
       "confirmCarry": "Mută {{count}} și încheie ziua",
       "endedTitle": "Zi încheiată",
       "reopen": "Redeschide ziua"
+    },
+    "tomorrowLink": "Mâine",
+    "backToToday": "Înapoi la azi",
+    "openPlanner": "Deschide planificatorul",
+    "laterDay": {
+      "title": "Planificat pentru",
+      "empty": "Încă nimic planificat pentru această zi. Adaugă sarcini mai jos sau deschide planificatorul.",
+      "add": "Adaugă în plan",
+      "due": "Scadent în acea zi"
     }
   },
   "capture": {

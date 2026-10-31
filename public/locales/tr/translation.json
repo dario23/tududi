@@ -2949,6 +2949,15 @@
       "confirmCarry": "{{count}} görevi taşı ve günü bitir",
       "endedTitle": "Gün tamamlandı",
       "reopen": "Günü yeniden aç"
+    },
+    "tomorrowLink": "Yarın",
+    "backToToday": "Bugüne dön",
+    "openPlanner": "Planlayıcıyı aç",
+    "laterDay": {
+      "title": "Plan:",
+      "empty": "Bu gün için henüz bir şey planlanmadı. Aşağıdan görev ekleyin veya planlayıcıyı açın.",
+      "add": "Plana ekle",
+      "due": "O gün teslim"
     }
   },
   "capture": {

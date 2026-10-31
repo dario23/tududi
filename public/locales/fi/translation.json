@@ -2949,6 +2949,15 @@
       "confirmCarry": "Siirrä {{count}} ja päätä päivä",
       "endedTitle": "Päivä valmis",
       "reopen": "Avaa päivä uudelleen"
+    },
+    "tomorrowLink": "Huomenna",
+    "backToToday": "Takaisin tähän päivään",
+    "openPlanner": "Avaa suunnittelija",
+    "laterDay": {
+      "title": "Suunniteltu päivälle",
+      "empty": "Tälle päivälle ei ole vielä suunniteltu mitään. Lisää tehtäviä alta tai avaa suunnittelija.",
+      "add": "Lisää suunnitelmaan",
+      "due": "Erääntyy sinä päivänä"
     }
   },
   "capture": {
